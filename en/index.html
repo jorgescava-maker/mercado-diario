@@ -200,8 +200,8 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
     <div class="kicker">Day-ahead price · ES · DE · FR · NL</div>
     <h1>Forecasting power prices 24 hours ahead</h1>
     <p class="lede">
-      Own hourly day-ahead price models for four European power markets, built
-      end to end from data ingestion to validation, plus sixteen market studies
+      Own day-ahead price models for four European power markets — period by
+      period and day by day — built end to end from data ingestion to validation, plus sixteen market studies
       on the same platform. This page shows the results and the method; the code
       and the trained models are not published.
     </p>
@@ -213,6 +213,7 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
     <nav class="toc" aria-label="Sections">
       <ol>
         <li><a href="#results">Results</a></li>
+        <li><a href="#daily">Daily product</a></li>
         <li><a href="#spain">The Spanish model</a></li>
         <li><a href="#models">Model families</a></li>
         <li><a href="#validation">Validation</a></li>
@@ -231,8 +232,8 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
       <h2>Between 34% and 49% less error than the industry reference</h2>
       <p>
         The metric is <strong>mean absolute error</strong> (MAE) in euros per
-        megawatt-hour, across every hour of roughly 18 months the model never saw
-        during training. Next to it, the reference any forecast in this market is
+        megawatt-hour, across every period of roughly 18 months the model never
+        saw during training. Next to it, the reference any forecast in this market is
         measured against: <strong>repeating yesterday's price for the same
         hour</strong>, which is surprisingly hard to beat because power prices are
         strongly seasonal.
@@ -297,7 +298,7 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
             <th scope="col">Market</th><th scope="col" class="num">Model MAE</th>
             <th scope="col" class="num">D-1 MAE</th><th scope="col" class="num">Improvement</th>
             <th scope="col" class="num">Correlation</th><th scope="col" class="num">Error / mean price</th>
-            <th scope="col" class="num">Hours evaluated</th>
+            <th scope="col" class="num">Periods evaluated</th>
           </tr>
         </thead>
         <tbody>
@@ -312,6 +313,104 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
         with its own. Every figure comes from the validation described below,
         never from the training set.
       </p>
+      <p class="panel-note" style="margin-top:10px">
+        <strong>On the unit:</strong> on 1 October 2025 the European market moved
+        to <strong>15-minute</strong> settlement periods instead of hours, so the
+        model now predicts 96 prices per day where it used to predict 24. The data
+        covers both regimes, and everything called a "period" here is an hour up
+        to that date and a quarter-hour after it.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ================= DAILY ================= -->
+  <section id="daily">
+    <div class="col">
+      <p class="eyebrow">Two products, one model</p>
+      <h2>The full-day block is a different market, and it forecasts far better</h2>
+      <p>Someone buying power for a factory or hedging a portfolio does not always
+        trade individual quarter-hours: they trade the <strong>full-day
+        block</strong>, a product with its own liquidity and its own futures
+        curve. That is a different question, and the project delivers it as a
+        second product.</p>
+      <p>The interesting part is that <strong>no new model is needed</strong>. Four
+        alternatives were tested — training a daily model from scratch,
+        correcting the daily residual, a distilled model fed with the
+        quarter-hourly predictions as inputs, and reweighting the ensemble
+        against a daily objective — and <strong>all four lose</strong> to the
+        simple option: averaging the day's 96 predictions. Averaging is itself a
+        variance reduction that no new model manages to beat.</p>
+      <p>The result is a daily error between 24% and 37% lower than the
+        single-period error, because averaging cancels the independent errors of
+        each quarter-hour. In Spain it drops from 9.83 to
+        <strong>6.18 EUR/MWh</strong>.</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Per-period error versus daily-average error</div>
+        <div class="panel-note">EUR/MWh · lower is better</div>
+      </div>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--ghost)"></i> Per period (15 min)</span>
+        <span><i class="sw" style="background:var(--data-1)"></i> Daily average</span>
+      </div>
+      <div class="scroll">
+        <svg viewBox="0 0 720 312" role="img" aria-label="Comparison of per-period error and daily-average error. Spain 9.83 versus 6.18. Germany 14.22 versus 10.78. France 15.93 versus 10.36. Netherlands 16.36 versus 11.07 EUR per megawatt hour.">
+          <line class="grid-line" x1="120" y1="30" x2="120" y2="292"></line>
+          <text x="120" y="20" font-size="10.5" text-anchor="middle">0</text>
+          <line class="grid-line" x1="250" y1="30" x2="250" y2="292"></line>
+          <text x="250" y="20" font-size="10.5" text-anchor="middle">5</text>
+          <line class="grid-line" x1="380" y1="30" x2="380" y2="292"></line>
+          <text x="380" y="20" font-size="10.5" text-anchor="middle">10</text>
+          <line class="grid-line" x1="510" y1="30" x2="510" y2="292"></line>
+          <text x="510" y="20" font-size="10.5" text-anchor="middle">15</text>
+          <line class="grid-line" x1="640" y1="30" x2="640" y2="292"></line>
+          <text x="640" y="20" font-size="10.5" text-anchor="middle">20</text>
+
+          <text class="cat" x="108" y="52" font-size="12.5" text-anchor="end">Spain</text>
+          <rect class="mark" x="120" y="42" width="255.6" height="17" rx="3" fill="var(--ghost)" data-tip="Spain · per period · MAE 9.83 EUR/MWh"></rect>
+          <text x="383.6" y="55" font-size="10.5">9.83</text>
+          <rect class="mark" x="120" y="61" width="160.7" height="17" rx="3" fill="var(--data-1)" data-tip="Spain · daily average · MAE 6.18 EUR/MWh"></rect>
+          <text class="val" x="288.7" y="74" font-size="12">6.18</text>
+          <text class="cat" x="108" y="114" font-size="12.5" text-anchor="end">Germany</text>
+          <rect class="mark" x="120" y="104" width="369.7" height="17" rx="3" fill="var(--ghost)" data-tip="Germany · per period · MAE 14.22 EUR/MWh"></rect>
+          <text x="497.7" y="117" font-size="10.5">14.22</text>
+          <rect class="mark" x="120" y="123" width="280.3" height="17" rx="3" fill="var(--data-1)" data-tip="Germany · daily average · MAE 10.78 EUR/MWh"></rect>
+          <text class="val" x="408.3" y="136" font-size="12">10.78</text>
+          <text class="cat" x="108" y="176" font-size="12.5" text-anchor="end">France</text>
+          <rect class="mark" x="120" y="166" width="414.2" height="17" rx="3" fill="var(--ghost)" data-tip="France · per period · MAE 15.93 EUR/MWh"></rect>
+          <text x="542.2" y="179" font-size="10.5">15.93</text>
+          <rect class="mark" x="120" y="185" width="269.4" height="17" rx="3" fill="var(--data-1)" data-tip="France · daily average · MAE 10.36 EUR/MWh"></rect>
+          <text class="val" x="397.4" y="198" font-size="12">10.36</text>
+          <text class="cat" x="108" y="238" font-size="12.5" text-anchor="end">Netherlands</text>
+          <rect class="mark" x="120" y="228" width="425.4" height="17" rx="3" fill="var(--ghost)" data-tip="Netherlands · per period · MAE 16.36 EUR/MWh"></rect>
+          <text x="553.4" y="241" font-size="10.5">16.36</text>
+          <rect class="mark" x="120" y="247" width="287.8" height="17" rx="3" fill="var(--data-1)" data-tip="Netherlands · daily average · MAE 11.07 EUR/MWh"></rect>
+          <text class="val" x="415.8" y="260" font-size="12">11.07</text>
+
+          <line class="axis-line" x1="120" y1="292" x2="680" y2="292"></line>
+          <text x="120" y="306" font-size="10.5">Mean absolute error (EUR/MWh)</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="panel">
+      <table>
+        <caption>Daily product · detail</caption>
+        <thead>
+          <tr><th scope="col">Market</th><th scope="col" class="num">Daily MAE</th><th scope="col" class="num">Naive daily MAE</th><th scope="col" class="num">Improvement</th><th scope="col" class="num">Correlation</th><th scope="col" class="num">Days evaluated</th></tr>
+        </thead>
+        <tbody>
+            <tr><td class="lead">Spain</td><td class="num">6.18</td><td class="num">13.89</td><td class="num">55.5%</td><td class="num">0.978</td><td class="num">328</td></tr>
+            <tr><td class="lead">Germany</td><td class="num">10.78</td><td class="num">22.53</td><td class="num">52.2%</td><td class="num">0.905</td><td class="num">319</td></tr>
+            <tr><td class="lead">France</td><td class="num">10.36</td><td class="num">18.42</td><td class="num">43.8%</td><td class="num">0.941</td><td class="num">325</td></tr>
+            <tr><td class="lead">Netherlands</td><td class="num">11.07</td><td class="num">20.30</td><td class="num">45.5%</td><td class="num">0.833</td><td class="num">320</td></tr>
+        </tbody>
+      </table>
+      <p class="panel-note" style="margin-top:16px">The daily reference is the previous day's average. Only complete days are
+        evaluated, so averages over truncated days are never mixed in.</p>
     </div>
   </section>
 
@@ -329,7 +428,7 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
       </p>
       <p>
         The chart below is measured over <strong>the same window of 36,142
-        hours</strong> in all five versions, which is the only way the differences
+        periods</strong> in all five versions, which is the only way the differences
         mean anything.
       </p>
     </div>
@@ -337,7 +436,7 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
     <div class="panel">
       <div class="panel-head">
         <div class="panel-title">What each component contributed · Spain</div>
-        <div class="panel-note">MAE in EUR/MWh · same window of 36,142 hours</div>
+        <div class="panel-note">MAE in EUR/MWh · same window of 36,142 periods</div>
       </div>
       <div class="scroll">
         <svg viewBox="0 0 720 258" role="img" aria-label="Contribution of each component to the Spanish model, over the same window. Ensemble of two tree models: 10.40. Adding the zero-price gate: 10.21. Adding the neural network as third member: 10.12. With the gate on the three-member ensemble: 9.90. With the upper-tail calibration: 9.83.">
@@ -354,29 +453,29 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
 
           <text x="238" y="44" font-size="11" text-anchor="end">Two tree models</text>
           <circle class="mark" cx="614.4" cy="40" r="5.5" fill="var(--data-1)" data-tip="Ensemble of two GBDTs (pooled + per hour) · MAE 10.40"></circle>
-          <text class="val" x="626" y="44" font-size="11.5">10.40</text>
+          <text class="val" x="602" y="44" text-anchor="end" font-size="11.5">10.40</text>
 
           <text x="238" y="80" font-size="11" text-anchor="end">+ zero-price gate</text>
           <line x1="614.4" y1="76" x2="528.0" y2="76" stroke="var(--data-1)" stroke-width="3"></line>
           <circle class="mark" cx="528.0" cy="76" r="5.5" fill="var(--data-1)" data-tip="With the zero-price classifier · MAE 10.21 · −0.19"></circle>
-          <text class="val" x="540" y="80" font-size="11.5">10.21</text>
+          <text class="val" x="516" y="80" text-anchor="end" font-size="11.5">10.21</text>
           <text x="622" y="80" font-size="10">−0.19</text>
 
           <text x="238" y="116" font-size="11" text-anchor="end">+ neural net (3rd member)</text>
           <line x1="528.0" y1="112" x2="486.9" y2="112" stroke="var(--data-1)" stroke-width="3"></line>
           <circle class="mark" cx="486.9" cy="112" r="5.5" fill="var(--data-1)" data-tip="Three-member ensemble, no gate · MAE 10.12"></circle>
-          <text class="val" x="499" y="116" font-size="11.5">10.12</text>
+          <text class="val" x="475" y="116" text-anchor="end" font-size="11.5">10.12</text>
 
           <text x="238" y="152" font-size="11" text-anchor="end">Three members + gate</text>
           <line x1="486.9" y1="148" x2="386.7" y2="148" stroke="var(--data-1)" stroke-width="3"></line>
           <circle class="mark" cx="386.7" cy="148" r="5.5" fill="var(--data-1)" data-tip="Three-member ensemble with the zero-price gate · MAE 9.90 · −0.22"></circle>
-          <text class="val" x="399" y="152" font-size="11.5">9.90</text>
+          <text class="val" x="375" y="152" text-anchor="end" font-size="11.5">9.90</text>
           <text x="622" y="152" font-size="10">−0.22</text>
 
           <text x="238" y="188" font-size="11" text-anchor="end">+ tail calibration</text>
           <line x1="386.7" y1="184" x2="354.8" y2="184" stroke="var(--data-2)" stroke-width="3"></line>
           <circle class="mark" cx="354.8" cy="184" r="6" fill="var(--data-2)" data-tip="Production: with upper-tail calibration · MAE 9.83 · −0.07"></circle>
-          <text class="val" x="368" y="188" font-size="11.5">9.83</text>
+          <text class="val" x="343" y="188" text-anchor="end" font-size="11.5">9.83</text>
           <text x="622" y="188" font-size="10">−0.07</text>
 
           <line class="axis-line" x1="250" y1="200" x2="680" y2="200"></line>
@@ -392,8 +491,8 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
         <strong>zero-price gate</strong> is a classifier that decides, before
         predicting a number at all, whether an hour will settle at zero or below.
         It exists because power prices are not a continuous variable: they have a
-        <strong>floor with concentrated mass</strong> — 6.3% of hours land exactly
-        there — and a regressor trained across the whole range spends its life
+        <strong>floor with concentrated mass</strong> — 6.3% of periods land
+        exactly there — and a regressor trained across the whole range spends its life
         splitting the difference between two distinct regimes.
       </p>
       <p>
@@ -403,10 +502,10 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
     </div>
 
     <div class="stats">
-      <div class="stat"><b>14.03 → 10.87</b><span>MAE in the top 5% of hours by price (above 168 EUR/MWh), from the two-member ensemble to production</span></div>
+      <div class="stat"><b>14.03 → 10.87</b><span>MAE in the top 5% of periods by price (above 168 EUR/MWh), from the two-member ensemble to production</span></div>
       <div class="stat"><b>−22.5%</b><span>error in that band, thanks to the third member and the calibration</span></div>
-      <div class="stat"><b>2.21</b><span>MAE in zero and negative price hours, where the gate does its work</span></div>
-      <div class="stat"><b>0.965</b><span>correlation with the actual price across the 36,142 hours evaluated</span></div>
+      <div class="stat"><b>2.21</b><span>MAE in zero and negative price periods, where the gate does its work</span></div>
+      <div class="stat"><b>0.965</b><span>correlation with the actual price across the 36,142 periods evaluated</span></div>
     </div>
   </section>
 
@@ -585,7 +684,7 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
       <p class="eyebrow">Diagnosis</p>
       <h2>The error is not spread evenly: it lives in the extremes</h2>
       <p>
-        An aggregate MAE hides where it comes from. Splitting hours by the price
+        An aggregate MAE hides where it comes from. Splitting periods by the price
         they ended up settling at reveals the real shape of the problem — and shows
         that each market fails somewhere different.
       </p>
@@ -600,9 +699,9 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
 
         <figure style="margin:0">
           <figcaption style="font-family:var(--f-mono);font-size:11.5px;color:var(--ink);font-weight:600;margin-bottom:6px">Spain</figcaption>
-          <svg viewBox="0 0 320 158" role="img" aria-label="Spain: 2.21 in hours priced at or below zero; 10.28 between 0 and 50; 11.55 between 50 and 100; 10.07 between 100 and 150; 11.01 above 150.">
+          <svg viewBox="0 0 320 158" role="img" aria-label="Spain: 2.21 in periods priced at or below zero; 10.28 between 0 and 50; 11.55 between 50 and 100; 10.07 between 100 and 150; 11.01 above 150.">
             <text x="58" y="19" font-size="9.5" text-anchor="end">≤ 0</text>
-            <rect class="mark" x="68" y="8" width="13.3" height="14" rx="3" fill="var(--data-1)" data-tip="Spain · ≤ 0 EUR/MWh · MAE 2.21"></rect>
+            <rect class="mark" x="68" y="8" width="13.3" height="14" rx="3" fill="var(--data-1)" data-tip="Spain · periods ≤ 0 EUR/MWh · MAE 2.21"></rect>
             <text class="val" x="87" y="19" font-size="10">2.21</text>
             <text x="58" y="45" font-size="9.5" text-anchor="end">0 – 50</text>
             <rect class="mark" x="68" y="34" width="61.7" height="14" rx="3" fill="var(--data-1)" data-tip="Spain · 0 to 50 EUR/MWh · MAE 10.28"></rect>
@@ -623,9 +722,9 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
 
         <figure style="margin:0">
           <figcaption style="font-family:var(--f-mono);font-size:11.5px;color:var(--ink);font-weight:600;margin-bottom:6px">Germany</figcaption>
-          <svg viewBox="0 0 320 158" role="img" aria-label="Germany: 18.39 in hours priced at or below zero; 14.28 between 0 and 50; 11.63 between 50 and 100; 11.10 between 100 and 150; 27.72 above 150.">
+          <svg viewBox="0 0 320 158" role="img" aria-label="Germany: 18.39 in periods priced at or below zero; 14.28 between 0 and 50; 11.63 between 50 and 100; 11.10 between 100 and 150; 27.72 above 150.">
             <text x="58" y="19" font-size="9.5" text-anchor="end">≤ 0</text>
-            <rect class="mark" x="68" y="8" width="110.3" height="14" rx="3" fill="var(--data-1)" data-tip="Germany · ≤ 0 EUR/MWh · MAE 18.39"></rect>
+            <rect class="mark" x="68" y="8" width="110.3" height="14" rx="3" fill="var(--data-1)" data-tip="Germany · periods ≤ 0 EUR/MWh · MAE 18.39"></rect>
             <text class="val" x="185" y="19" font-size="10">18.39</text>
             <text x="58" y="45" font-size="9.5" text-anchor="end">0 – 50</text>
             <rect class="mark" x="68" y="34" width="85.7" height="14" rx="3" fill="var(--data-1)" data-tip="Germany · 0 to 50 EUR/MWh · MAE 14.28"></rect>
@@ -646,9 +745,9 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
 
         <figure style="margin:0">
           <figcaption style="font-family:var(--f-mono);font-size:11.5px;color:var(--ink);font-weight:600;margin-bottom:6px">France</figcaption>
-          <svg viewBox="0 0 320 158" role="img" aria-label="France: 21.40 in hours priced at or below zero; 15.19 between 0 and 50; 12.89 between 50 and 100; 16.86 between 100 and 150; 22.48 above 150.">
+          <svg viewBox="0 0 320 158" role="img" aria-label="France: 21.40 in periods priced at or below zero; 15.19 between 0 and 50; 12.89 between 50 and 100; 16.86 between 100 and 150; 22.48 above 150.">
             <text x="58" y="19" font-size="9.5" text-anchor="end">≤ 0</text>
-            <rect class="mark" x="68" y="8" width="128.4" height="14" rx="3" fill="var(--data-1)" data-tip="France · ≤ 0 EUR/MWh · MAE 21.40"></rect>
+            <rect class="mark" x="68" y="8" width="128.4" height="14" rx="3" fill="var(--data-1)" data-tip="France · periods ≤ 0 EUR/MWh · MAE 21.40"></rect>
             <text class="val" x="203" y="19" font-size="10">21.40</text>
             <text x="58" y="45" font-size="9.5" text-anchor="end">0 – 50</text>
             <rect class="mark" x="68" y="34" width="91.1" height="14" rx="3" fill="var(--data-1)" data-tip="France · 0 to 50 EUR/MWh · MAE 15.19"></rect>
@@ -669,9 +768,9 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
 
         <figure style="margin:0">
           <figcaption style="font-family:var(--f-mono);font-size:11.5px;color:var(--ink);font-weight:600;margin-bottom:6px">Netherlands</figcaption>
-          <svg viewBox="0 0 320 158" role="img" aria-label="Netherlands: 24.85 in hours priced at or below zero; 21.99 between 0 and 50; 11.60 between 50 and 100; 12.75 between 100 and 150; 33.18 above 150.">
+          <svg viewBox="0 0 320 158" role="img" aria-label="Netherlands: 24.85 in periods priced at or below zero; 21.99 between 0 and 50; 11.60 between 50 and 100; 12.75 between 100 and 150; 33.18 above 150.">
             <text x="58" y="19" font-size="9.5" text-anchor="end">≤ 0</text>
-            <rect class="mark" x="68" y="8" width="149.1" height="14" rx="3" fill="var(--data-1)" data-tip="Netherlands · ≤ 0 EUR/MWh · MAE 24.85"></rect>
+            <rect class="mark" x="68" y="8" width="149.1" height="14" rx="3" fill="var(--data-1)" data-tip="Netherlands · periods ≤ 0 EUR/MWh · MAE 24.85"></rect>
             <text class="val" x="224" y="19" font-size="10">24.85</text>
             <text x="58" y="45" font-size="9.5" text-anchor="end">0 – 50</text>
             <rect class="mark" x="68" y="34" width="131.9" height="14" rx="3" fill="var(--data-1)" data-tip="Netherlands · 0 to 50 EUR/MWh · MAE 21.99"></rect>

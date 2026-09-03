@@ -201,8 +201,8 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
     <div class="kicker">Precio day-ahead · ES · DE · FR · NL</div>
     <h1>Predecir el precio de la luz 24 horas antes</h1>
     <p class="lede">
-      Modelos propios de precio horario del mercado diario para cuatro mercados
-      eléctricos europeos, construidos desde la ingesta de datos hasta la
+      Modelos propios de precio del mercado diario —periodo a periodo y día a
+      día— para cuatro mercados eléctricos europeos, construidos desde la ingesta de datos hasta la
       validación, más dieciséis estudios de mercado sobre la misma base. Esta
       página enseña los resultados y el método; el código y los modelos no se
       publican.
@@ -215,6 +215,7 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
     <nav class="toc" aria-label="Secciones">
       <ol>
         <li><a href="#resultado">Resultados</a></li>
+        <li><a href="#diario">Producto diario</a></li>
         <li><a href="#espana">El modelo español</a></li>
         <li><a href="#modelos">Familias de modelos</a></li>
         <li><a href="#validacion">Validación</a></li>
@@ -233,8 +234,8 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
       <h2>Entre un 34 % y un 49 % menos de error que la referencia del sector</h2>
       <p>
         La medida es el <strong>error absoluto medio</strong> (MAE) en euros por
-        megavatio-hora, sobre todas las horas de unos 18 meses que el modelo nunca
-        vio al entrenarse. Al lado, la referencia contra la que se compara
+        megavatio-hora, sobre todos los periodos de unos 18 meses que el modelo
+        nunca vio al entrenarse. Al lado, la referencia contra la que se compara
         cualquier previsión de este mercado: <strong>repetir el precio de ayer a
         la misma hora</strong>, difícil de batir porque el precio eléctrico es muy
         estacional.
@@ -299,7 +300,7 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
             <th scope="col">Mercado</th><th scope="col" class="num">MAE modelo</th>
             <th scope="col" class="num">MAE D-1</th><th scope="col" class="num">Mejora</th>
             <th scope="col" class="num">Correlación</th><th scope="col" class="num">Error / precio medio</th>
-            <th scope="col" class="num">Horas evaluadas</th>
+            <th scope="col" class="num">Periodos evaluados</th>
           </tr>
         </thead>
         <tbody>
@@ -314,6 +315,105 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
         suya. Todas las cifras salen de la validación descrita más abajo, nunca del
         conjunto de entrenamiento.
       </p>
+      <p class="panel-note" style="margin-top:10px">
+        <strong>Sobre la unidad:</strong> el 1 de octubre de 2025 el mercado
+        europeo pasó a casar en periodos de <strong>15 minutos</strong> en vez de
+        horas, así que el modelo predice 96 precios por día donde antes predecía
+        24. Los datos cubren los dos regímenes y todo lo que aquí se llama
+        «periodo» es una hora hasta esa fecha y un cuarto de hora después.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ================= DIARIO ================= -->
+  <section id="diario">
+    <div class="col">
+      <p class="eyebrow">Dos productos, un solo modelo</p>
+      <h2>El bloque de día completo es otro mercado, y se predice mucho mejor</h2>
+      <p>Quien compra energía para una fábrica o cubre una cartera no siempre
+        negocia cuartos de hora sueltos: negocia el <strong>bloque de día
+        completo</strong>, un producto con su propia liquidez y sus propios
+        futuros. Es una pregunta distinta, y el proyecto la entrega como segundo
+        producto.</p>
+      <p>Lo interesante es que <strong>no hace falta un modelo nuevo</strong>. Se
+        probaron cuatro alternativas —entrenar un modelo diario desde cero,
+        corregir el residuo diario, un modelo destilado que recibe como entrada
+        las predicciones del cuartohorario, y reponderar el ensemble con
+        objetivo diario— y <strong>las cuatro pierden</strong> contra la opción
+        simple: promediar las 96 predicciones del día. Promediar ya es en sí
+        mismo una reducción de varianza que ningún modelo nuevo consigue
+        mejorar.</p>
+      <p>El resultado es que el error diario es entre un 24 % y un 37 % menor
+        que el del periodo suelto, porque al promediar se cancelan los errores
+        independientes de cada cuarto de hora. En España baja de 9,83 a
+        <strong>6,18 EUR/MWh</strong>.</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Error por periodo frente a error de la media diaria</div>
+        <div class="panel-note">EUR/MWh · menos es mejor</div>
+      </div>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--ghost)"></i> Por periodo (15 min)</span>
+        <span><i class="sw" style="background:var(--data-1)"></i> Media diaria</span>
+      </div>
+      <div class="scroll">
+        <svg viewBox="0 0 720 312" role="img" aria-label="Comparación del error por periodo y del error de la media diaria. España 9,83 frente a 6,18. Alemania 14,22 frente a 10,78. Francia 15,93 frente a 10,36. Países Bajos 16,36 frente a 11,07 EUR por megavatio hora.">
+          <line class="grid-line" x1="120" y1="30" x2="120" y2="292"></line>
+          <text x="120" y="20" font-size="10.5" text-anchor="middle">0</text>
+          <line class="grid-line" x1="250" y1="30" x2="250" y2="292"></line>
+          <text x="250" y="20" font-size="10.5" text-anchor="middle">5</text>
+          <line class="grid-line" x1="380" y1="30" x2="380" y2="292"></line>
+          <text x="380" y="20" font-size="10.5" text-anchor="middle">10</text>
+          <line class="grid-line" x1="510" y1="30" x2="510" y2="292"></line>
+          <text x="510" y="20" font-size="10.5" text-anchor="middle">15</text>
+          <line class="grid-line" x1="640" y1="30" x2="640" y2="292"></line>
+          <text x="640" y="20" font-size="10.5" text-anchor="middle">20</text>
+
+          <text class="cat" x="108" y="52" font-size="12.5" text-anchor="end">España</text>
+          <rect class="mark" x="120" y="42" width="255.6" height="17" rx="3" fill="var(--ghost)" data-tip="España · por periodo · MAE 9,83 EUR/MWh"></rect>
+          <text x="383.6" y="55" font-size="10.5">9,83</text>
+          <rect class="mark" x="120" y="61" width="160.7" height="17" rx="3" fill="var(--data-1)" data-tip="España · media diaria · MAE 6,18 EUR/MWh"></rect>
+          <text class="val" x="288.7" y="74" font-size="12">6,18</text>
+          <text class="cat" x="108" y="114" font-size="12.5" text-anchor="end">Alemania</text>
+          <rect class="mark" x="120" y="104" width="369.7" height="17" rx="3" fill="var(--ghost)" data-tip="Alemania · por periodo · MAE 14,22 EUR/MWh"></rect>
+          <text x="497.7" y="117" font-size="10.5">14,22</text>
+          <rect class="mark" x="120" y="123" width="280.3" height="17" rx="3" fill="var(--data-1)" data-tip="Alemania · media diaria · MAE 10,78 EUR/MWh"></rect>
+          <text class="val" x="408.3" y="136" font-size="12">10,78</text>
+          <text class="cat" x="108" y="176" font-size="12.5" text-anchor="end">Francia</text>
+          <rect class="mark" x="120" y="166" width="414.2" height="17" rx="3" fill="var(--ghost)" data-tip="Francia · por periodo · MAE 15,93 EUR/MWh"></rect>
+          <text x="542.2" y="179" font-size="10.5">15,93</text>
+          <rect class="mark" x="120" y="185" width="269.4" height="17" rx="3" fill="var(--data-1)" data-tip="Francia · media diaria · MAE 10,36 EUR/MWh"></rect>
+          <text class="val" x="397.4" y="198" font-size="12">10,36</text>
+          <text class="cat" x="108" y="238" font-size="12.5" text-anchor="end">Países Bajos</text>
+          <rect class="mark" x="120" y="228" width="425.4" height="17" rx="3" fill="var(--ghost)" data-tip="Países Bajos · por periodo · MAE 16,36 EUR/MWh"></rect>
+          <text x="553.4" y="241" font-size="10.5">16,36</text>
+          <rect class="mark" x="120" y="247" width="287.8" height="17" rx="3" fill="var(--data-1)" data-tip="Países Bajos · media diaria · MAE 11,07 EUR/MWh"></rect>
+          <text class="val" x="415.8" y="260" font-size="12">11,07</text>
+
+          <line class="axis-line" x1="120" y1="292" x2="680" y2="292"></line>
+          <text x="120" y="306" font-size="10.5">Error absoluto medio (EUR/MWh)</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="panel">
+      <table>
+        <caption>Producto diario · detalle</caption>
+        <thead>
+          <tr><th scope="col">Mercado</th><th scope="col" class="num">MAE diario</th><th scope="col" class="num">MAE naive diario</th><th scope="col" class="num">Mejora</th><th scope="col" class="num">Correlación</th><th scope="col" class="num">Días evaluados</th></tr>
+        </thead>
+        <tbody>
+            <tr><td class="lead">España</td><td class="num">6,18</td><td class="num">13,89</td><td class="num">55,5 %</td><td class="num">0,978</td><td class="num">328</td></tr>
+            <tr><td class="lead">Alemania</td><td class="num">10,78</td><td class="num">22,53</td><td class="num">52,2 %</td><td class="num">0,905</td><td class="num">319</td></tr>
+            <tr><td class="lead">Francia</td><td class="num">10,36</td><td class="num">18,42</td><td class="num">43,8 %</td><td class="num">0,941</td><td class="num">325</td></tr>
+            <tr><td class="lead">Países Bajos</td><td class="num">11,07</td><td class="num">20,30</td><td class="num">45,5 %</td><td class="num">0,833</td><td class="num">320</td></tr>
+        </tbody>
+      </table>
+      <p class="panel-note" style="margin-top:16px">La referencia diaria es la media del día anterior. Solo se evalúan días
+        completos, para no mezclar medias calculadas sobre días truncados.</p>
     </div>
   </section>
 
@@ -330,7 +430,8 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
         adoptó solo después de medir por separado cuánto bajaba el error.
       </p>
       <p>
-        El gráfico está medido sobre <strong>la misma ventana de 36.142 horas</strong>
+        El gráfico está medido sobre <strong>la misma ventana de 36.142
+        periodos</strong>
         en las cinco versiones, que es la única forma de que las diferencias
         signifiquen algo.
       </p>
@@ -339,7 +440,7 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
     <div class="panel">
       <div class="panel-head">
         <div class="panel-title">Qué aportó cada pieza · España</div>
-        <div class="panel-note">MAE en EUR/MWh · misma ventana de 36.142 horas</div>
+        <div class="panel-note">MAE en EUR/MWh · misma ventana de 36.142 periodos</div>
       </div>
       <div class="scroll">
         <svg viewBox="0 0 720 258" role="img" aria-label="Aportación de cada pieza al modelo español, sobre la misma ventana. Ensemble de dos modelos de árboles: 10,40. Añadiendo la puerta de precio cero: 10,21. Añadiendo el tercer miembro de red neuronal: 10,12. Con la puerta sobre el ensemble de tres: 9,90. Con la calibración de la cola alta: 9,83.">
@@ -356,29 +457,29 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
 
           <text x="238" y="44" font-size="11" text-anchor="end">Dos modelos de árboles</text>
           <circle class="mark" cx="614.4" cy="40" r="5.5" fill="var(--data-1)" data-tip="Ensemble de dos GBDT (agrupado + por hora) · MAE 10,40"></circle>
-          <text class="val" x="626" y="44" font-size="11.5">10,40</text>
+          <text class="val" x="602" y="44" text-anchor="end" font-size="11.5">10,40</text>
 
           <text x="238" y="80" font-size="11" text-anchor="end">+ puerta de precio cero</text>
           <line x1="614.4" y1="76" x2="528.0" y2="76" stroke="var(--data-1)" stroke-width="3"></line>
           <circle class="mark" cx="528.0" cy="76" r="5.5" fill="var(--data-1)" data-tip="Con el clasificador de precio cero · MAE 10,21 · −0,19"></circle>
-          <text class="val" x="540" y="80" font-size="11.5">10,21</text>
+          <text class="val" x="516" y="80" text-anchor="end" font-size="11.5">10,21</text>
           <text x="622" y="80" font-size="10">−0,19</text>
 
           <text x="238" y="116" font-size="11" text-anchor="end">+ red neuronal (3.er miembro)</text>
           <line x1="528.0" y1="112" x2="486.9" y2="112" stroke="var(--data-1)" stroke-width="3"></line>
           <circle class="mark" cx="486.9" cy="112" r="5.5" fill="var(--data-1)" data-tip="Ensemble de tres, sin puerta · MAE 10,12"></circle>
-          <text class="val" x="499" y="116" font-size="11.5">10,12</text>
+          <text class="val" x="475" y="116" text-anchor="end" font-size="11.5">10,12</text>
 
           <text x="238" y="152" font-size="11" text-anchor="end">Tres miembros + puerta</text>
           <line x1="486.9" y1="148" x2="386.7" y2="148" stroke="var(--data-1)" stroke-width="3"></line>
           <circle class="mark" cx="386.7" cy="148" r="5.5" fill="var(--data-1)" data-tip="Ensemble de tres con la puerta de precio cero · MAE 9,90 · −0,22"></circle>
-          <text class="val" x="399" y="152" font-size="11.5">9,90</text>
+          <text class="val" x="375" y="152" text-anchor="end" font-size="11.5">9,90</text>
           <text x="622" y="152" font-size="10">−0,22</text>
 
           <text x="238" y="188" font-size="11" text-anchor="end">+ calibración de la cola</text>
           <line x1="386.7" y1="184" x2="354.8" y2="184" stroke="var(--data-2)" stroke-width="3"></line>
           <circle class="mark" cx="354.8" cy="184" r="6" fill="var(--data-2)" data-tip="Producción: con la calibración de la cola alta · MAE 9,83 · −0,07"></circle>
-          <text class="val" x="368" y="188" font-size="11.5">9,83</text>
+          <text class="val" x="343" y="188" text-anchor="end" font-size="11.5">9,83</text>
           <text x="622" y="188" font-size="10">−0,07</text>
 
           <line class="axis-line" x1="250" y1="200" x2="680" y2="200"></line>
@@ -395,8 +496,8 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
         precio cero</strong> es un clasificador que decide, antes de predecir un
         número, si esa hora va a ser de precio nulo o negativo. Existe porque el
         precio eléctrico no es una variable continua: tiene un
-        <strong>suelo con masa concentrada</strong> —el 6,3 % de las horas caen
-        exactamente ahí— y un regresor entrenado sobre todo el rango se pasa la
+        <strong>suelo con masa concentrada</strong> —el 6,3 % de los periodos
+        caen exactamente ahí— y un regresor entrenado sobre todo el rango se pasa la
         vida repartiendo la diferencia entre dos regímenes distintos.
       </p>
       <p>
@@ -406,10 +507,10 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
     </div>
 
     <div class="stats">
-      <div class="stat"><b>14,03 → 10,87</b><span>MAE en el 5 % de horas más caras (por encima de 168 EUR/MWh), del ensemble de dos a producción</span></div>
+      <div class="stat"><b>14,03 → 10,87</b><span>MAE en el 5 % de periodos más caros (por encima de 168 EUR/MWh), del ensemble de dos a producción</span></div>
       <div class="stat"><b>−22,5 %</b><span>de error en ese tramo gracias al tercer miembro y a la calibración</span></div>
-      <div class="stat"><b>2,21</b><span>MAE en las horas de precio nulo o negativo, donde la puerta hace su trabajo</span></div>
-      <div class="stat"><b>0,965</b><span>correlación con el precio real en las 36.142 horas evaluadas</span></div>
+      <div class="stat"><b>2,21</b><span>MAE en los periodos de precio nulo o negativo, donde la puerta hace su trabajo</span></div>
+      <div class="stat"><b>0,965</b><span>correlación con el precio real en los 36.142 periodos evaluados</span></div>
     </div>
   </section>
 
@@ -588,8 +689,8 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
       <p class="eyebrow">Diagnóstico</p>
       <h2>El error no está repartido: vive en los extremos</h2>
       <p>
-        Un MAE agregado esconde de dónde viene. Separando las horas por el precio
-        que acabaron teniendo, aparece la forma real del problema — y se ve que
+        Un MAE agregado esconde de dónde viene. Separando los periodos por el
+        precio al que acabaron casando, aparece la forma real del problema — y se ve que
         cada mercado falla en un sitio distinto.
       </p>
     </div>
@@ -603,9 +704,9 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
 
         <figure style="margin:0">
           <figcaption style="font-family:var(--f-mono);font-size:11.5px;color:var(--ink);font-weight:600;margin-bottom:6px">España</figcaption>
-          <svg viewBox="0 0 320 158" role="img" aria-label="España: 2,21 en horas de precio menor o igual a cero; 10,28 entre 0 y 50; 11,55 entre 50 y 100; 10,07 entre 100 y 150; 11,01 por encima de 150.">
+          <svg viewBox="0 0 320 158" role="img" aria-label="España: 2,21 en periodos de precio nulo o negativo; 10,28 entre 0 y 50; 11,55 entre 50 y 100; 10,07 entre 100 y 150; 11,01 por encima de 150.">
             <text x="58" y="19" font-size="9.5" text-anchor="end">≤ 0</text>
-            <rect class="mark" x="68" y="8" width="13.3" height="14" rx="3" fill="var(--data-1)" data-tip="España · ≤ 0 EUR/MWh · MAE 2,21"></rect>
+            <rect class="mark" x="68" y="8" width="13.3" height="14" rx="3" fill="var(--data-1)" data-tip="España · periodos ≤ 0 EUR/MWh · MAE 2,21"></rect>
             <text class="val" x="87" y="19" font-size="10">2,21</text>
             <text x="58" y="45" font-size="9.5" text-anchor="end">0 – 50</text>
             <rect class="mark" x="68" y="34" width="61.7" height="14" rx="3" fill="var(--data-1)" data-tip="España · 0 a 50 EUR/MWh · MAE 10,28"></rect>
@@ -626,9 +727,9 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
 
         <figure style="margin:0">
           <figcaption style="font-family:var(--f-mono);font-size:11.5px;color:var(--ink);font-weight:600;margin-bottom:6px">Alemania</figcaption>
-          <svg viewBox="0 0 320 158" role="img" aria-label="Alemania: 18,39 en horas de precio menor o igual a cero; 14,28 entre 0 y 50; 11,63 entre 50 y 100; 11,10 entre 100 y 150; 27,72 por encima de 150.">
+          <svg viewBox="0 0 320 158" role="img" aria-label="Alemania: 18,39 en periodos de precio nulo o negativo; 14,28 entre 0 y 50; 11,63 entre 50 y 100; 11,10 entre 100 y 150; 27,72 por encima de 150.">
             <text x="58" y="19" font-size="9.5" text-anchor="end">≤ 0</text>
-            <rect class="mark" x="68" y="8" width="110.3" height="14" rx="3" fill="var(--data-1)" data-tip="Alemania · ≤ 0 EUR/MWh · MAE 18,39"></rect>
+            <rect class="mark" x="68" y="8" width="110.3" height="14" rx="3" fill="var(--data-1)" data-tip="Alemania · periodos ≤ 0 EUR/MWh · MAE 18,39"></rect>
             <text class="val" x="185" y="19" font-size="10">18,39</text>
             <text x="58" y="45" font-size="9.5" text-anchor="end">0 – 50</text>
             <rect class="mark" x="68" y="34" width="85.7" height="14" rx="3" fill="var(--data-1)" data-tip="Alemania · 0 a 50 EUR/MWh · MAE 14,28"></rect>
@@ -649,9 +750,9 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
 
         <figure style="margin:0">
           <figcaption style="font-family:var(--f-mono);font-size:11.5px;color:var(--ink);font-weight:600;margin-bottom:6px">Francia</figcaption>
-          <svg viewBox="0 0 320 158" role="img" aria-label="Francia: 21,40 en horas de precio menor o igual a cero; 15,19 entre 0 y 50; 12,89 entre 50 y 100; 16,86 entre 100 y 150; 22,48 por encima de 150.">
+          <svg viewBox="0 0 320 158" role="img" aria-label="Francia: 21,40 en periodos de precio nulo o negativo; 15,19 entre 0 y 50; 12,89 entre 50 y 100; 16,86 entre 100 y 150; 22,48 por encima de 150.">
             <text x="58" y="19" font-size="9.5" text-anchor="end">≤ 0</text>
-            <rect class="mark" x="68" y="8" width="128.4" height="14" rx="3" fill="var(--data-1)" data-tip="Francia · ≤ 0 EUR/MWh · MAE 21,40"></rect>
+            <rect class="mark" x="68" y="8" width="128.4" height="14" rx="3" fill="var(--data-1)" data-tip="Francia · periodos ≤ 0 EUR/MWh · MAE 21,40"></rect>
             <text class="val" x="203" y="19" font-size="10">21,40</text>
             <text x="58" y="45" font-size="9.5" text-anchor="end">0 – 50</text>
             <rect class="mark" x="68" y="34" width="91.1" height="14" rx="3" fill="var(--data-1)" data-tip="Francia · 0 a 50 EUR/MWh · MAE 15,19"></rect>
@@ -672,9 +773,9 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
 
         <figure style="margin:0">
           <figcaption style="font-family:var(--f-mono);font-size:11.5px;color:var(--ink);font-weight:600;margin-bottom:6px">Países Bajos</figcaption>
-          <svg viewBox="0 0 320 158" role="img" aria-label="Países Bajos: 24,85 en horas de precio menor o igual a cero; 21,99 entre 0 y 50; 11,60 entre 50 y 100; 12,75 entre 100 y 150; 33,18 por encima de 150.">
+          <svg viewBox="0 0 320 158" role="img" aria-label="Países Bajos: 24,85 en periodos de precio nulo o negativo; 21,99 entre 0 y 50; 11,60 entre 50 y 100; 12,75 entre 100 y 150; 33,18 por encima de 150.">
             <text x="58" y="19" font-size="9.5" text-anchor="end">≤ 0</text>
-            <rect class="mark" x="68" y="8" width="149.1" height="14" rx="3" fill="var(--data-1)" data-tip="Países Bajos · ≤ 0 EUR/MWh · MAE 24,85"></rect>
+            <rect class="mark" x="68" y="8" width="149.1" height="14" rx="3" fill="var(--data-1)" data-tip="Países Bajos · periodos ≤ 0 EUR/MWh · MAE 24,85"></rect>
             <text class="val" x="224" y="19" font-size="10">24,85</text>
             <text x="58" y="45" font-size="9.5" text-anchor="end">0 – 50</text>
             <rect class="mark" x="68" y="34" width="131.9" height="14" rx="3" fill="var(--data-1)" data-tip="Países Bajos · 0 a 50 EUR/MWh · MAE 21,99"></rect>

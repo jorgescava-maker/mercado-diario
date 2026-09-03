@@ -10,16 +10,20 @@ predicción del precio horario del mercado diario (*day-ahead*) para España,
 Alemania, Francia y Países Bajos, más dieciséis estudios de mercado construidos
 sobre la misma base de datos.
 
-| Mercado | MAE del modelo | MAE de repetir el precio de ayer | Mejora |
-|---|---|---|---|
-| España | 9,83 EUR/MWh | 17,95 | 45,2 % |
-| Alemania | 14,22 | 27,61 | 48,5 % |
-| Francia | 15,93 | 24,05 | 33,8 % |
-| Países Bajos | 16,36 | 26,06 | 37,2 % |
+Dos productos del mismo modelo: el precio de cada periodo de casación y la media
+del día completo.
 
-Medido con validación *walk-forward* mensual sobre unas 36.000 horas por mercado
-que el modelo nunca vio al entrenarse, usando únicamente información disponible
-antes del cierre de la subasta.
+| Mercado | MAE por periodo | MAE media diaria | Referencia D-1 (periodo) | Mejora |
+|---|---|---|---|---|
+| España | 9,83 EUR/MWh | **6,18** | 17,95 | 45,2 % |
+| Alemania | 14,22 | **10,78** | 27,61 | 48,5 % |
+| Francia | 15,93 | **10,36** | 24,05 | 33,8 % |
+| Países Bajos | 16,36 | **11,07** | 26,06 | 37,2 % |
+
+Medido con validación *walk-forward* mensual sobre unos 36.000 periodos de
+casación por mercado que el modelo nunca vio al entrenarse, usando únicamente
+información disponible antes del cierre de la subasta. Desde el 1 de octubre de
+2025 el periodo europeo es de 15 minutos en vez de una hora.
 
 ## Qué hay en este repositorio
 
