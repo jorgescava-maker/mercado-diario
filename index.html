@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mercado Diario · Jorge Sánchez Cava</title>
-<meta name="description" content="Modelos propios de precio day-ahead para los mercados eléctricos de España, Alemania, Francia y Países Bajos, con dieciséis estudios de mercado sobre la misma base de datos. Resultados y método, por Jorge Sánchez Cava.">
+<meta name="description" content="Modelos propios de predicción del precio del mercado diario para los mercados eléctricos de España, Alemania, Francia y Países Bajos. Resultados y método, por Jorge Sánchez Cava.">
 <meta name="author" content="Jorge Sánchez Cava">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f2f3f0" media="(prefers-color-scheme: light)">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_ES">
 <meta property="og:title" content="Mercado Diario · Jorge Sánchez Cava">
-<meta property="og:description" content="Modelos propios de precio day-ahead para los mercados eléctricos de España, Alemania, Francia y Países Bajos, con dieciséis estudios de mercado sobre la misma base de datos. Resultados y método, por Jorge Sánchez Cava.">
+<meta property="og:description" content="Modelos propios de predicción del precio del mercado diario para los mercados eléctricos de España, Alemania, Francia y Países Bajos. Resultados y método, por Jorge Sánchez Cava.">
 <meta name="twitter:card" content="summary">
 <link rel="alternate" hreflang="es" href="https://jorgescava-maker.github.io/mercado-diario/">
 <link rel="alternate" hreflang="en" href="https://jorgescava-maker.github.io/mercado-diario/en/">
@@ -144,7 +144,6 @@ td.num { font-size:13.5px; }
 td.lead { font-weight:600; }
 tbody tr:last-child td { border-bottom:none; }
 td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); white-space:nowrap; }
-.t-studies td { font-size:14.5px; line-height:1.5; }
 
 .steps { list-style:none; margin:26px 0 0; padding:0; display:grid; gap:1px;
   background:var(--rule); border:1px solid var(--rule); border-radius:3px; overflow:hidden; }
@@ -203,9 +202,8 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
     <p class="lede">
       Modelos propios de precio del mercado diario —periodo a periodo y día a
       día— para cuatro mercados eléctricos europeos, construidos desde la ingesta de datos hasta la
-      validación, más dieciséis estudios de mercado sobre la misma base. Esta
-      página enseña los resultados y el método; el código y los modelos no se
-      publican.
+      validación. Esta página enseña los resultados y el método; el código y los
+      modelos no se publican.
     </p>
     <div class="byline">
       <strong>Jorge Sánchez Cava</strong>
@@ -221,7 +219,6 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
         <li><a href="#validacion">Validación</a></li>
         <li><a href="#error">Dónde vive el error</a></li>
         <li><a href="#mercados">Los otros tres mercados</a></li>
-        <li><a href="#estudios">Dieciséis estudios</a></li>
         <li><a href="#datos">Los datos</a></li>
       </ol>
     </nav>
@@ -936,47 +933,6 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
           las horas caras de hoy son tardes de verano que cualquier regla basada en
           el nivel de demanda clasificaría como holgadas.
         </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= ESTUDIOS ================= -->
-  <section id="estudios">
-    <div class="col">
-      <p class="eyebrow">Dieciséis estudios</p>
-      <h2>La misma base de datos, dieciséis preguntas distintas</h2>
-      <p>
-        Antes de los modelos de precio se hicieron dieciséis estudios de mercado
-        sobre la misma infraestructura de datos. Cada uno con su diseño escrito
-        antes de mirar resultados y su registro de lo que salió, incluidas las
-        hipótesis que no se confirmaron.
-      </p>
-    </div>
-
-    <div class="panel">
-      <div class="scroll">
-        <table class="t-studies">
-          <caption>Catálogo de estudios · hallazgo principal de cada uno</caption>
-          <thead><tr><th scope="col">Estudio</th><th scope="col">Qué salió</th></tr></thead>
-          <tbody>
-            <tr><td class="code">A1</td><td><strong>Canibalización renovable.</strong> Panel mensual por tecnología, 2023-2026. Seis de los cuarenta y cuatro meses de eólica tenían huecos de API sin detectar: se verificaron en vivo, se recargaron y quedó como mejora permanente del ecosistema de datos.</td></tr>
-            <tr><td class="code">A2</td><td><strong>Horas de precio cero o negativo.</strong> Pasan del 0,79 % de las horas en 2023 al 16,50 % en 2026 (parcial), corrigiendo antes el sesgo de contar por periodo de 15 minutos en vez de por hora.</td></tr>
-            <tr><td class="code">A3</td><td><strong>Excepción ibérica.</strong> El mecanismo estuvo vigente hasta el 31 de enero de 2025, bastante más de lo que decía el diseño original; el estudio se rediseñó como diferencias-en-diferencias «durante vs. después».</td></tr>
-            <tr><td class="code">B1</td><td><strong>Error de previsión como señal.</strong> El desvío entre la previsión D-1 y la realidad, medido sobre el intradiario continuo, anticipa parte del movimiento de precio posterior.</td></tr>
-            <tr><td class="code">B2</td><td><strong>Predicción de desvíos.</strong> Los precios de desvío llegan a −1.864 y +4.286 EUR/MWh: son colas estructurales por diseño regulatorio, no errores de carga, y obligan a usar estadística de rangos.</td></tr>
-            <tr><td class="code">C1</td><td><strong>Arbitraje con baterías.</strong> Añadir el intradiario continuo al day-ahead sube el spread capturable un <strong>+20,5 %</strong> sin cambiar nada más de la estrategia.</td></tr>
-            <tr><td class="code">C2</td><td><strong>Spark spread como opción.</strong> El margen medio de un ciclo combinado es <strong>−20,78 EUR/MWh</strong>, pero su valor real pudiendo elegir cuándo generar es <strong>+8,92</strong>. La demostración de manual de por qué una central es una opción, no un contrato.</td></tr>
-            <tr><td class="code">C3</td><td><strong>Valor del agua.</strong> Señal clara en la dirección esperada, tras resolver que el nivel de embalses se publica en domingo y el resto de series agregan en lunes.</td></tr>
-            <tr><td class="code">D1</td><td><strong>Diferencial España-Francia.</strong> Solo el 33 % de las horas tiene los mercados acoplados y el 41,2 % tiene desacople fuerte: la interconexión es una restricción activa la mayor parte del tiempo, no una excepción.</td></tr>
-            <tr><td class="code">E1</td><td><strong>Riesgo de cola.</strong> La hipótesis se confirma solo a medias, y la parte que no encaja se explica por el propio periodo muestral, no por un fallo del análisis.</td></tr>
-            <tr><td class="code">E2</td><td><strong>Cambio de combustible.</strong> Hay cointegración entre los precios de los combustibles, con la salvedad honesta de que el spread limpio sale negativo más a menudo de lo esperado.</td></tr>
-            <tr><td class="code">F1</td><td><strong>Servicios de ajuste en Australia.</strong> El mercado del sur de Australia tiene un spread relativo unas <strong>13 veces mayor</strong> que el español.</td></tr>
-            <tr><td class="code">F2</td><td><strong>Curva de pato australiana.</strong> Confirma peor canibalización absoluta que en España, con una sorpresa metodológica en cómo se mide el factor de valor.</td></tr>
-            <tr><td class="code">G1</td><td><strong>Velocidad de reacción al clima.</strong> La escalera de revisiones de previsión existe y tiene magnitud medible; el clima crudo es una señal mucho más débil que el error de previsión.</td></tr>
-            <tr><td class="code">G2</td><td><strong>Fiabilidad de la previsión.</strong> Las revisiones grandes se confirman más de lo que revierten — y el mercado no puede distinguir cuáles en el momento en que ocurren.</td></tr>
-            <tr><td class="code">G3</td><td><strong>Reacción de la generación.</strong> Una corrección detectada antes de construir el predictor dejó el hallazgo central más claro, no más débil.</td></tr>
-          </tbody>
-        </table>
       </div>
     </div>
   </section>

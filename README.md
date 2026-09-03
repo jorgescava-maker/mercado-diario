@@ -6,9 +6,8 @@ eléctricos europeos.
 **→ [jorgescava-maker.github.io/mercado-diario](https://jorgescava-maker.github.io/mercado-diario/)**  ·  [English version](https://jorgescava-maker.github.io/mercado-diario/en/)
 
 Presenta los resultados y el método de un proyecto personal: modelos propios de
-predicción del precio horario del mercado diario (*day-ahead*) para España,
-Alemania, Francia y Países Bajos, más dieciséis estudios de mercado construidos
-sobre la misma base de datos.
+predicción del precio del mercado diario (*day-ahead*) para España, Alemania,
+Francia y Países Bajos.
 
 Dos productos del mismo modelo: el precio de cada periodo de casación y la media
 del día completo.

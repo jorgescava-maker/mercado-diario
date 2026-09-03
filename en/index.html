@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Day-Ahead Price Models · Jorge Sánchez Cava</title>
-<meta name="description" content="Own day-ahead price forecasting models for the Spanish, German, French and Dutch power markets, plus sixteen market studies on the same data platform. Results and method, by Jorge Sánchez Cava.">
+<meta name="description" content="Own day-ahead price forecasting models for the Spanish, German, French and Dutch power markets. Results and method, by Jorge Sánchez Cava.">
 <meta name="author" content="Jorge Sánchez Cava">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f2f3f0" media="(prefers-color-scheme: light)">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_GB">
 <meta property="og:title" content="Day-Ahead Price Models · Jorge Sánchez Cava">
-<meta property="og:description" content="Own day-ahead price forecasting models for four European power markets, plus sixteen market studies. Results and method.">
+<meta property="og:description" content="Own day-ahead price forecasting models for the Spanish, German, French and Dutch power markets. Results and method, by Jorge Sánchez Cava.">
 <meta name="twitter:card" content="summary">
 <link rel="alternate" hreflang="es" href="https://jorgescava-maker.github.io/mercado-diario/">
 <link rel="alternate" hreflang="en" href="https://jorgescava-maker.github.io/mercado-diario/en/">
@@ -141,7 +141,6 @@ td.num { font-size:13.5px; }
 td.lead { font-weight:600; }
 tbody tr:last-child td { border-bottom:none; }
 td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); white-space:nowrap; }
-.t-studies td { font-size:14.5px; line-height:1.5; }
 
 .steps { list-style:none; margin:26px 0 0; padding:0; display:grid; gap:1px;
   background:var(--rule); border:1px solid var(--rule); border-radius:3px; overflow:hidden; }
@@ -201,9 +200,9 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
     <h1>Forecasting power prices 24 hours ahead</h1>
     <p class="lede">
       Own day-ahead price models for four European power markets — period by
-      period and day by day — built end to end from data ingestion to validation, plus sixteen market studies
-      on the same platform. This page shows the results and the method; the code
-      and the trained models are not published.
+      period and day by day — built end to end from data ingestion to validation.
+      This page shows the results and the method; the code and the trained models
+      are not published.
     </p>
     <div class="byline">
       <strong>Jorge Sánchez Cava</strong>
@@ -219,7 +218,6 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
         <li><a href="#validation">Validation</a></li>
         <li><a href="#error">Where the error lives</a></li>
         <li><a href="#markets">The other three markets</a></li>
-        <li><a href="#studies">Sixteen studies</a></li>
         <li><a href="#data">The data</a></li>
       </ol>
     </nav>
@@ -930,47 +928,6 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
           summer evenings that any rule based on demand level would classify as
           comfortable.
         </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= STUDIES ================= -->
-  <section id="studies">
-    <div class="col">
-      <p class="eyebrow">Sixteen studies</p>
-      <h2>The same data platform, sixteen different questions</h2>
-      <p>
-        Before the price models came sixteen market studies on the same data
-        infrastructure. Each with its design written before looking at any results,
-        and its own record of what came out — including the hypotheses that were
-        not confirmed.
-      </p>
-    </div>
-
-    <div class="panel">
-      <div class="scroll">
-        <table class="t-studies">
-          <caption>Study catalogue · headline finding of each</caption>
-          <thead><tr><th scope="col">Study</th><th scope="col">What came out</th></tr></thead>
-          <tbody>
-            <tr><td class="code">A1</td><td><strong>Renewable cannibalisation.</strong> Monthly panel by technology, 2023–2026. Six of the forty-four months of wind data had undetected API gaps: verified live, reloaded, and kept as a permanent fix to the data platform.</td></tr>
-            <tr><td class="code">A2</td><td><strong>Zero and negative price hours.</strong> They go from 0.79% of hours in 2023 to 16.50% in 2026 (partial), after first correcting the bias of counting 15-minute periods instead of hours.</td></tr>
-            <tr><td class="code">A3</td><td><strong>The Iberian exception.</strong> The mechanism ran until 31 January 2025, considerably longer than the original design assumed; the study was redesigned as a during-versus-after difference-in-differences.</td></tr>
-            <tr><td class="code">B1</td><td><strong>Forecast error as a signal.</strong> The gap between the D-1 forecast and reality, measured on the continuous intraday market, anticipates part of the subsequent price move.</td></tr>
-            <tr><td class="code">B2</td><td><strong>Imbalance forecasting.</strong> Imbalance prices reach −1,864 and +4,286 EUR/MWh: structural tails by regulatory design rather than loading errors, which forces the use of rank statistics.</td></tr>
-            <tr><td class="code">C1</td><td><strong>Battery arbitrage.</strong> Adding the continuous intraday market to day-ahead raises the capturable spread by <strong>+20.5%</strong> with no other change to the strategy.</td></tr>
-            <tr><td class="code">C2</td><td><strong>Spark spread as an option.</strong> A CCGT's average margin is <strong>−20.78 EUR/MWh</strong>, but its real value when it can choose when to run is <strong>+8.92</strong>. The textbook demonstration of why a plant is an option, not a contract.</td></tr>
-            <tr><td class="code">C3</td><td><strong>Water value.</strong> A clear signal in the expected direction, after resolving that reservoir levels publish on Sundays while the other series aggregate to Mondays.</td></tr>
-            <tr><td class="code">D1</td><td><strong>Spain–France basis.</strong> Only 33% of hours have the two markets coupled and 41.2% show strong decoupling: the interconnector is an active constraint most of the time, not an occasional exception.</td></tr>
-            <tr><td class="code">E1</td><td><strong>Tail risk.</strong> The hypothesis is only half confirmed, and the part that does not fit is explained by the sample period itself rather than by a flaw in the analysis.</td></tr>
-            <tr><td class="code">E2</td><td><strong>Fuel switching.</strong> There is cointegration between fuel prices, with the honest caveat that the clean spark spread comes out negative more often than expected.</td></tr>
-            <tr><td class="code">F1</td><td><strong>Frequency services in Australia.</strong> The South Australian market has a relative spread roughly <strong>13 times larger</strong> than Spain's.</td></tr>
-            <tr><td class="code">F2</td><td><strong>Australian duck curve.</strong> Confirms worse absolute cannibalisation than Spain, with a methodological surprise in how the value factor is measured.</td></tr>
-            <tr><td class="code">G1</td><td><strong>Speed of reaction to weather.</strong> The ladder of forecast revisions exists and has measurable magnitude; raw weather is a much weaker signal than forecast error.</td></tr>
-            <tr><td class="code">G2</td><td><strong>Forecast reliability.</strong> Large revisions are confirmed more often than they revert — and the market cannot tell which is which at the moment they happen.</td></tr>
-            <tr><td class="code">G3</td><td><strong>Generation response.</strong> A correction spotted before building the predictor left the central finding clearer, not weaker.</td></tr>
-          </tbody>
-        </table>
       </div>
     </div>
   </section>
