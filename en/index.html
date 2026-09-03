@@ -218,6 +218,7 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
         <li><a href="#validation">Validation</a></li>
         <li><a href="#error">Where the error lives</a></li>
         <li><a href="#markets">The other three markets</a></li>
+        <li><a href="#studies">Three studies</a></li>
         <li><a href="#data">The data</a></li>
       </ol>
     </nav>
@@ -929,6 +930,232 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
           comfortable.
         </p>
       </div>
+    </div>
+  </section>
+
+
+  <!-- ================= STUDIES ================= -->
+  <section id="studies">
+    <div class="col">
+      <p class="eyebrow">Three market studies</p>
+      <h2>The same data platform answers questions that are not about forecasting</h2>
+      <p>Valuation and market-structure studies were built on the same
+        infrastructure. Each with its design written before any results were seen,
+        its own model, and a record of what it failed to confirm. Here are three.</p>
+    </div>
+
+    <div class="finding">
+      <div class="col">
+        <h3>A gas plant loses money on average and is still worth money</h3>
+        <p>Valuing a gas plant by its average margin — the power price minus its cost
+        to run, hour by hour — gives <strong>−20.78 EUR/MWh</strong>: it would lose
+        money if forced to run all 24 hours. But it is not forced to. It runs only
+        when it pays, and that right to choose is what gets valued:
+        <strong>+8.92 EUR/MWh</strong>.</p>
+        <p>The gap, <strong>29.70 EUR/MWh</strong>, is the value of optionality, and it
+        is why a plant is not a contract but an option. It exercises 38.7% of
+        hours.</p>
+        <p>What the annual series shows is more interesting still. The average margin
+        collapses — from −11.34 to −40.78 EUR/MWh in four years, from the price
+        erosion renewables bring — but <strong>the option value barely moves</strong>,
+        between 7.99 and 9.47. The plant exercises less and less often (from 47% to
+        28% of hours) and those hours stay almost as profitable. The more variable
+        renewables enter, the more flexibility is worth and the less baseload
+        generation is.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Average margin against option value, by year</div>
+          <div class="panel-note">Combined-cycle gas plant · EUR/MWh</div>
+        </div>
+        <div class="scroll">
+        <svg viewBox="0 0 720 300" role="img" aria-label="Average margin and option value by year. The average margin falls from −11.34 in 2023 to −40.78 EUR/MWh in 2026, while the option value stays between 7.99 and 9.47.">
+          <line class="grid-line" x1="110" y1="37.4" x2="560" y2="37.4"></line>
+          <text x="100" y="41.4" font-size="10.5" text-anchor="end">10</text>
+          <line class="grid-line" x1="110" y1="111.0" x2="560" y2="111.0"></line>
+          <text x="100" y="115.0" font-size="10.5" text-anchor="end">−10</text>
+          <line class="grid-line" x1="110" y1="147.9" x2="560" y2="147.9"></line>
+          <text x="100" y="151.9" font-size="10.5" text-anchor="end">−20</text>
+          <line class="grid-line" x1="110" y1="184.7" x2="560" y2="184.7"></line>
+          <text x="100" y="188.7" font-size="10.5" text-anchor="end">−30</text>
+          <line class="grid-line" x1="110" y1="221.6" x2="560" y2="221.6"></line>
+          <text x="100" y="225.6" font-size="10.5" text-anchor="end">−40</text>
+          <line class="axis-line" x1="110" y1="74.2" x2="560" y2="74.2"></line>
+          <text x="100" y="78.2" font-size="10.5" text-anchor="end">0</text>
+          <polyline fill="none" stroke="var(--data-1)" stroke-width="2" stroke-linejoin="round" points="110,39.3 260,43.1 410,39.3 560,44.8"></polyline>
+          <polyline fill="none" stroke="var(--data-2)" stroke-width="2" stroke-linejoin="round" points="110,116.0 260,138.8 410,148.7 560,224.4"></polyline>
+          <circle class="mark" cx="110" cy="39.3" r="4.5" fill="var(--data-1)" data-tip="2023 · option value · 9.47 EUR/MWh · exercised 47.2% of hours"></circle>
+          <circle class="mark" cx="110" cy="116.0" r="4.5" fill="var(--data-2)" data-tip="2023 · average margin if always running · -11.34 EUR/MWh"></circle>
+          <circle class="mark" cx="260" cy="43.1" r="4.5" fill="var(--data-1)" data-tip="2024 · option value · 8.44 EUR/MWh · exercised 37.6% of hours"></circle>
+          <circle class="mark" cx="260" cy="138.8" r="4.5" fill="var(--data-2)" data-tip="2024 · average margin if always running · -17.53 EUR/MWh"></circle>
+          <circle class="mark" cx="410" cy="39.3" r="4.5" fill="var(--data-1)" data-tip="2025 · option value · 9.47 EUR/MWh · exercised 38.5% of hours"></circle>
+          <circle class="mark" cx="410" cy="148.7" r="4.5" fill="var(--data-2)" data-tip="2025 · average margin if always running · -20.23 EUR/MWh"></circle>
+          <circle class="mark" cx="560" cy="44.8" r="4.5" fill="var(--data-1)" data-tip="2026 · option value · 7.99 EUR/MWh · exercised 27.9% of hours"></circle>
+          <circle class="mark" cx="560" cy="224.4" r="4.5" fill="var(--data-2)" data-tip="2026 · average margin if always running · -40.78 EUR/MWh"></circle>
+          <text x="570" y="48.8" font-size="10.5" class="val">option value</text>
+          <text x="570" y="228.4" font-size="10.5" class="val">average margin</text>
+          <text x="110" y="262" font-size="11" text-anchor="middle" class="val">2023</text>
+          <text x="110" y="280" font-size="10" text-anchor="middle">47.2%</text>
+          <text x="260" y="262" font-size="11" text-anchor="middle" class="val">2024</text>
+          <text x="260" y="280" font-size="10" text-anchor="middle">37.6%</text>
+          <text x="410" y="262" font-size="11" text-anchor="middle" class="val">2025</text>
+          <text x="410" y="280" font-size="10" text-anchor="middle">38.5%</text>
+          <text x="560" y="262" font-size="11" text-anchor="middle" class="val">2026</text>
+          <text x="560" y="280" font-size="10" text-anchor="middle">27.9%</text>
+          <text x="110" y="298" font-size="10.5">Year · below, the % of hours where running is worth it</text>
+        </svg>
+        </div>
+      </div>
+      <div class="col" style="margin-top:26px"><p>The figure above is an upper bound: it assumes switching on and off hour by
+        hour at no cost. Under a realistic dispatch — minimum 4 hours on, 2 hours
+        off and 50 EUR/MW per start, solved by dynamic programming — the value falls
+        to <strong>7.37 EUR/MWh</strong>, only 17% lower. The reason is that
+        profitable hours are not scattered: they come in blocks, so the minimum
+        run-time rarely forces the plant to stay on through bad hours.</p></div>
+    <div class="stats">
+      <div class="stat"><b>−20.78</b><span>EUR/MWh average margin: the plant would lose money running always</span></div>
+      <div class="stat"><b>+8.92</b><span>EUR/MWh of real value, when it can choose when to run</span></div>
+      <div class="stat"><b>+7.37</b><span>EUR/MWh under realistic constrained dispatch (min run-times and start costs)</span></div>
+      <div class="stat"><b>64,518</b><span>EUR/MW/year annualised under those constraints</span></div>
+    </div>
+    </div>
+
+    <div class="finding">
+      <div class="col">
+        <h3>Access to more markets is worth far more to a small battery</h3>
+        <p>A battery makes money buying low and selling high. The study asks how much
+        is added by also trading the <em class="term">continuous intraday</em> market
+        rather than day-ahead alone, and whether that depends on battery size.</p>
+        <p>It does, enormously. With an optimised dispatch and real technical
+        constraints, adding intraday more than doubles the revenue of a
+        <strong>1-hour</strong> battery (+126%), but lifts a 4-hour one by only
+        <strong>40.6%</strong>.</p>
+        <p>The mechanism is clear: a 4-hour battery already captures the day's big
+        spread from day-ahead alone, so intraday adds little. A 1-hour battery
+        cannot do that and lives on finding many small opportunities — exactly what
+        a continuous market offers. It is a concrete commercial conclusion:
+        <strong><em class="term">revenue stacking</em> matters far more the shorter
+        the battery</strong>.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Revenue per installed MW by battery duration</div>
+          <div class="panel-note">694 days · 1 MW capacity · 88% round-trip efficiency</div>
+        </div>
+        <div class="legend">
+          <span><i class="sw" style="background:var(--ghost)"></i> Day-ahead only</span>
+          <span><i class="sw" style="background:var(--data-1)"></i> Day-ahead + continuous intraday</span>
+        </div>
+        <div class="scroll">
+        <svg viewBox="0 0 720 252" role="img" aria-label="Battery revenue by duration, day-ahead only versus day-ahead plus intraday. One hour: 71,287 versus 161,136, 126% more. Two hours: 132,160 versus 223,739, 69.3% more. Four hours: 224,648 versus 315,848, 40.6% more.">
+          <line class="grid-line" x1="110.0" y1="30" x2="110.0" y2="205"></line>
+          <text x="110.0" y="22" font-size="10.5" text-anchor="middle">0k</text>
+          <line class="grid-line" x1="269.4" y1="30" x2="269.4" y2="205"></line>
+          <text x="269.4" y="22" font-size="10.5" text-anchor="middle">100k</text>
+          <line class="grid-line" x1="428.8" y1="30" x2="428.8" y2="205"></line>
+          <text x="428.8" y="22" font-size="10.5" text-anchor="middle">200k</text>
+          <line class="grid-line" x1="588.1" y1="30" x2="588.1" y2="205"></line>
+          <text x="588.1" y="22" font-size="10.5" text-anchor="middle">300k</text>
+          <text class="cat" x="98" y="52" font-size="12.5" text-anchor="end">1 h</text>
+          <text x="98" y="68" font-size="10.5" text-anchor="end" fill="var(--data-1)">+126.0%</text>
+          <rect class="mark" x="110" y="40" width="113.6" height="9" rx="3" fill="var(--ghost)" data-tip="1 h · day-ahead only · 71,287 EUR/MW"></rect>
+          <text x="231.6" y="48" font-size="10.5">71,287</text>
+          <rect class="mark" x="110" y="51" width="256.8" height="17" rx="3" fill="var(--data-1)" data-tip="1 h · day-ahead + intraday · 161,136 EUR/MW"></rect>
+          <text class="val" x="374.8" y="64" font-size="12">161,136</text>
+          <text class="cat" x="98" y="112" font-size="12.5" text-anchor="end">2 h</text>
+          <text x="98" y="128" font-size="10.5" text-anchor="end" fill="var(--data-1)">+69.3%</text>
+          <rect class="mark" x="110" y="100" width="210.6" height="9" rx="3" fill="var(--ghost)" data-tip="2 h · day-ahead only · 132,160 EUR/MW"></rect>
+          <text x="328.6" y="108" font-size="10.5">132,160</text>
+          <rect class="mark" x="110" y="111" width="356.6" height="17" rx="3" fill="var(--data-1)" data-tip="2 h · day-ahead + intraday · 223,739 EUR/MW"></rect>
+          <text class="val" x="474.6" y="124" font-size="12">223,739</text>
+          <text class="cat" x="98" y="172" font-size="12.5" text-anchor="end">4 h</text>
+          <text x="98" y="188" font-size="10.5" text-anchor="end" fill="var(--data-1)">+40.6%</text>
+          <rect class="mark" x="110" y="160" width="358.0" height="9" rx="3" fill="var(--ghost)" data-tip="4 h · day-ahead only · 224,648 EUR/MW"></rect>
+          <text x="476.0" y="168" font-size="10.5">224,648</text>
+          <rect class="mark" x="110" y="171" width="503.4" height="17" rx="3" fill="var(--data-1)" data-tip="4 h · day-ahead + intraday · 315,848 EUR/MW"></rect>
+          <text class="val" x="621.4" y="184" font-size="12">315,848</text>
+          <line class="axis-line" x1="110" y1="205" x2="680" y2="205"></line>
+          <text x="110" y="228" font-size="10.5">Cumulative revenue over 694 days, EUR per MW installed</text>
+        </svg>
+        </div>
+      </div>
+    <div class="stats">
+      <div class="stat"><b>+126.0%</b><span>extra revenue for a 1-hour battery from adding the intraday market</span></div>
+      <div class="stat"><b>+40.6%</b><span>for a 4-hour one: the same market is worth far less</span></div>
+      <div class="stat"><b>88%</b><span>round-trip efficiency assumed, declared and not calibrated</span></div>
+      <div class="stat"><b>694</b><span>days of history optimised with a linear dispatch</span></div>
+    </div>
+    </div>
+
+    <div class="finding">
+      <div class="col">
+        <h3>The French interconnector is congested far more than it looks</h3>
+        <p>Spain and France share a single power corridor. When it has spare capacity
+        the two prices converge; when it saturates, they separate. The difference
+        between them — the <em class="term">basis</em> — averages just −1.02 EUR/MWh,
+        and that figure is misleading: its standard deviation is
+        <strong>39.75</strong>.</p>
+        <p>Broken down: only <strong>33%</strong> of hours have the two markets
+        effectively coupled, while <strong>41.2%</strong> show strong decoupling,
+        above 20 EUR/MWh. The interconnector is an active constraint most of the
+        time, not an occasional exception.</p>
+        <p>And my favourite finding here is methodological. French nuclear
+        unavailability appeared to explain nothing: its same-instant correlation with
+        the basis is <strong>+0.07</strong>, near zero and with the opposite sign to
+        theory. But running a Granger causality test across lags, it appears strongly
+        from 6 hours onwards. <strong>A weak contemporaneous correlation does not
+        rule out a real relationship — you may simply be looking at the wrong
+        moment.</strong></p>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Granger causality test: French nuclear against the basis</div>
+          <div class="panel-note">p-value by lag · below 0.05 is significant</div>
+        </div>
+        <div class="scroll">
+        <svg viewBox="0 0 720 240" role="img" aria-label="Granger causality test p-value by lag: 0.115 at 1 hour, 0.015 at 2 hours, 0.065 at 3 hours, and below 0.0001 from 6 hours onwards.">
+          <line class="grid-line" x1="110" y1="74.6" x2="640" y2="74.6"></line>
+          <text x="100" y="78.6" font-size="10.5" text-anchor="end">0.10</text>
+          <line class="grid-line" x1="110" y1="132.3" x2="640" y2="132.3"></line>
+          <text x="100" y="136.3" font-size="10.5" text-anchor="end">0.05</text>
+          <line x1="110" y1="132.3" x2="640" y2="132.3" stroke="var(--data-2)" stroke-width="1.5" stroke-dasharray="5 4"></line>
+          <text x="648" y="136.3" font-size="10" fill="var(--data-2)">0.05 threshold</text>
+          <polyline fill="none" stroke="var(--data-1)" stroke-width="2" stroke-linejoin="round" points="110,57.3 205,172.7 300,115.0 395,189.9 490,190.0 585,190.0"></polyline>
+          <circle class="mark" cx="110" cy="57.3" r="5" fill="var(--data-1)" data-tip="lag 1 h · p = 0.115 · not significant"></circle>
+          <text class="val" x="110" y="44.3" font-size="10" text-anchor="middle">0.115</text>
+          <circle class="mark" cx="205" cy="172.7" r="5" fill="var(--data-1)" data-tip="lag 2 h · p = 0.015 · significant"></circle>
+          <text class="val" x="205" y="159.7" font-size="10" text-anchor="middle">0.015</text>
+          <circle class="mark" cx="300" cy="115.0" r="5" fill="var(--data-1)" data-tip="lag 3 h · p = 0.065 · not significant"></circle>
+          <text class="val" x="300" y="102.0" font-size="10" text-anchor="middle">0.065</text>
+          <circle class="mark" cx="395" cy="189.9" r="5" fill="var(--data-1)" data-tip="lag 6 h · p = 0.0001 · significant"></circle>
+          <text class="val" x="395" y="176.9" font-size="10" text-anchor="middle">0.0001</text>
+          <circle class="mark" cx="490" cy="190.0" r="5" fill="var(--data-1)" data-tip="lag 12 h · p = <0.0001 · significant"></circle>
+          <text class="val" x="490" y="177.0" font-size="10" text-anchor="middle"><0.0001</text>
+          <circle class="mark" cx="585" cy="190.0" r="5" fill="var(--data-1)" data-tip="lag 24 h · p = <0.0001 · significant"></circle>
+          <text class="val" x="585" y="177.0" font-size="10" text-anchor="middle"><0.0001</text>
+          <line class="axis-line" x1="110" y1="190" x2="680" y2="190"></line>
+          <text x="110" y="212" font-size="10.5" text-anchor="middle">1 h</text>
+          <text x="205" y="212" font-size="10.5" text-anchor="middle">2 h</text>
+          <text x="300" y="212" font-size="10.5" text-anchor="middle">3 h</text>
+          <text x="395" y="212" font-size="10.5" text-anchor="middle">6 h</text>
+          <text x="490" y="212" font-size="10.5" text-anchor="middle">12 h</text>
+          <text x="585" y="212" font-size="10.5" text-anchor="middle">24 h</text>
+          <text x="110" y="234" font-size="10.5">Lag of French nuclear unavailability against the basis</text>
+        </svg>
+        </div>
+      </div>
+      <div class="col" style="margin-top:26px"><p>With the three variables together, a tree model cuts the basis prediction
+        error from 24.19 to <strong>21.43 EUR/MWh</strong> against predicting the
+        mean, and Spanish wind dominates feature importance. But to <em>classify</em>
+        whether congestion will occur, a simple threshold on interconnector
+        utilisation (F1 0.661) <strong>beats the full model</strong> (0.641). Where a
+        dominant structural driver exists, extra complexity buys nothing.</p></div>
+    <div class="stats">
+      <div class="stat"><b>41.2%</b><span>of hours with the markets strongly decoupled (more than 20 EUR/MWh)</span></div>
+      <div class="stat"><b>33%</b><span>of hours with the two prices effectively coupled</span></div>
+      <div class="stat"><b>−0.44</b><span>correlation of Spanish wind with the basis: the strongest driver</span></div>
+      <div class="stat"><b>0.661</b><span>F1 of the simple threshold, above the full model's 0.641</span></div>
+    </div>
     </div>
   </section>
 
