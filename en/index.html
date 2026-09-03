@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day-Ahead Price Models · Jorge Sánchez Cava</title>
+<meta name="description" content="Own day-ahead price forecasting models for the Spanish, German, French and Dutch power markets, plus sixteen market studies on the same data platform. Results and method, by Jorge Sánchez Cava.">
+<meta name="author" content="Jorge Sánchez Cava">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f2f3f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1417" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="Day-Ahead Price Models · Jorge Sánchez Cava">
+<meta property="og:description" content="Own day-ahead price forecasting models for four European power markets, plus sixteen market studies. Results and method.">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" hreflang="es" href="https://jorgescava-maker.github.io/mercado-diario/">
+<link rel="alternate" hreflang="en" href="https://jorgescava-maker.github.io/mercado-diario/en/">
+<link rel="alternate" hreflang="x-default" href="https://jorgescava-maker.github.io/mercado-diario/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b4a52'/%3E%3Cpath d='M7 23V15h4v8zm7 0V9h4v14zm7 0v-5h4v5z' fill='%2300879c'/%3E%3C/svg%3E">
+<style>
+  html { color-scheme: light dark; }
+  body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root {
+  color-scheme: light;
+  --ground:#f2f3f0; --surface:#ffffff; --panel:#fafbf8;
+  --ink:#111a1c; --ink-2:#4b5658; --ink-3:#7c8788;
+  --rule:#dde1dc; --rule-strong:#c3cac4;
+  --struct:#0b4a52; --data-1:#00879c; --data-2:#bf4f1c; --ghost:#ccd2cd;
+  --tip-bg:#111a1c; --tip-ink:#f2f3f0; --focus:#00879c;
+  --f-display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+  --measure:68ch; --wide:1060px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground:#0d1417; --surface:#141d21; --panel:#111a1e;
+    --ink:#eaf0ef; --ink-2:#a4b1b1; --ink-3:#6e7d7d;
+    --rule:#222f34; --rule-strong:#33454b;
+    --struct:#63c3ce; --data-1:#189cb0; --data-2:#cf6d36; --ghost:#2c3a3f;
+    --tip-bg:#eaf0ef; --tip-ink:#0d1417; --focus:#63c3ce;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground:#0d1417; --surface:#141d21; --panel:#111a1e;
+  --ink:#eaf0ef; --ink-2:#a4b1b1; --ink-3:#6e7d7d;
+  --rule:#222f34; --rule-strong:#33454b;
+  --struct:#63c3ce; --data-1:#189cb0; --data-2:#cf6d36; --ghost:#2c3a3f;
+  --tip-bg:#eaf0ef; --tip-ink:#0d1417; --focus:#63c3ce;
+}
+
+body { background:var(--ground); color:var(--ink); font-family:var(--f-body);
+  font-size:17px; line-height:1.62; -webkit-font-smoothing:antialiased; }
+*,*::before,*::after { box-sizing:border-box; }
+:focus-visible { outline:2px solid var(--focus); outline-offset:3px; border-radius:2px; }
+
+.page { max-width:var(--wide); margin:0 auto; padding:0 28px 96px; }
+.col { max-width:var(--measure); }
+
+.langbar { display:flex; justify-content:flex-end; gap:14px; padding:18px 0 0;
+  font-family:var(--f-mono); font-size:11.5px; letter-spacing:.04em; }
+.langbar a { color:var(--struct); text-decoration:none; border-bottom:1px solid var(--rule-strong); padding-bottom:1px; }
+.langbar a:hover { border-bottom-color:var(--struct); }
+.langbar span[aria-current] { color:var(--ink-3); }
+
+.masthead { padding:34px 0 34px; border-bottom:1px solid var(--rule-strong); }
+.kicker { font-family:var(--f-mono); font-size:11px; font-weight:500; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--struct); display:flex; align-items:center; gap:10px; margin-bottom:26px; }
+.kicker::before { content:""; width:26px; height:2px; background:var(--struct); flex:none; }
+h1 { font-family:var(--f-display); font-weight:700; font-size:clamp(2.4rem,5.8vw,4rem);
+  line-height:1.02; letter-spacing:-.025em; margin:0 0 22px; text-wrap:balance; max-width:17ch; }
+.lede { font-size:1.2rem; line-height:1.55; color:var(--ink-2); max-width:62ch; margin:0; }
+.byline { margin-top:32px; display:flex; flex-wrap:wrap; gap:10px 30px; align-items:baseline;
+  font-family:var(--f-mono); font-size:12.5px; color:var(--ink-3); }
+.byline strong { font-weight:600; color:var(--ink); font-size:13.5px; }
+
+nav.toc { padding:20px 0 0; }
+nav.toc ol { list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:6px 8px;
+  font-family:var(--f-mono); font-size:11.5px; }
+nav.toc a { color:var(--ink-2); text-decoration:none; border:1px solid var(--rule-strong);
+  border-radius:2px; padding:5px 10px; display:block; background:var(--surface); }
+nav.toc a:hover { border-color:var(--struct); color:var(--struct); }
+
+section { padding-top:66px; scroll-margin-top:20px; }
+.eyebrow { font-family:var(--f-mono); font-size:11px; font-weight:500; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--ink-3); margin:0 0 14px; }
+h2 { font-family:var(--f-display); font-weight:700; font-size:clamp(1.55rem,3.1vw,2.1rem);
+  line-height:1.12; letter-spacing:-.018em; margin:0 0 20px; text-wrap:balance; max-width:23ch; }
+h3 { font-family:var(--f-display); font-weight:700; font-size:1.06rem; letter-spacing:-.006em; margin:0 0 8px; }
+p { margin:0 0 18px; } p:last-child { margin-bottom:0; }
+strong { font-weight:600; }
+em.term { font-style:normal; font-family:var(--f-mono); font-size:.88em; color:var(--struct); }
+
+.panel { background:var(--panel); border:1px solid var(--rule); border-radius:3px;
+  padding:28px 26px 22px; margin:30px 0 0; }
+.panel-head { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline;
+  gap:8px 24px; margin-bottom:20px; }
+.panel-title { font-family:var(--f-display); font-weight:700; font-size:1rem; }
+.panel-note { font-family:var(--f-mono); font-size:11px; color:var(--ink-3); }
+.scroll { overflow-x:auto; }
+svg { display:block; max-width:100%; height:auto; }
+svg text { font-family:var(--f-mono); fill:var(--ink-2); }
+.axis-line { stroke:var(--rule-strong); stroke-width:1; }
+.grid-line { stroke:var(--rule); stroke-width:1; }
+.val { fill:var(--ink); font-weight:600; }
+.cat { fill:var(--ink); font-weight:600; }
+.mark { transition:opacity .12s ease; }
+.mark:hover { opacity:.78; }
+
+.legend { display:flex; flex-wrap:wrap; gap:8px 22px; margin-bottom:18px;
+  font-family:var(--f-mono); font-size:11.5px; color:var(--ink-2); }
+.legend span { display:inline-flex; align-items:center; gap:7px; }
+.sw { width:13px; height:9px; border-radius:2px; flex:none; }
+
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(178px,1fr)); gap:1px;
+  background:var(--rule); border:1px solid var(--rule); border-radius:3px; margin-top:30px; overflow:hidden; }
+.stat { background:var(--panel); padding:20px 20px 18px; }
+.stat b { display:block; font-family:var(--f-display); font-weight:700; font-size:1.8rem;
+  letter-spacing:-.02em; line-height:1.05; color:var(--struct); font-variant-numeric:tabular-nums; }
+.stat span { display:block; margin-top:7px; font-family:var(--f-mono); font-size:11.5px;
+  line-height:1.45; color:var(--ink-3); }
+
+table { border-collapse:collapse; width:100%; font-size:14px; }
+caption { text-align:left; font-family:var(--f-mono); font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-3); padding-bottom:12px; }
+th,td { padding:9px 14px 9px 0; text-align:left; border-bottom:1px solid var(--rule); vertical-align:top; }
+th { font-family:var(--f-mono); font-size:10.5px; font-weight:500; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-3); border-bottom-color:var(--rule-strong); }
+td.num,th.num { text-align:right; font-family:var(--f-mono); font-variant-numeric:tabular-nums; }
+td.num { font-size:13.5px; }
+td.lead { font-weight:600; }
+tbody tr:last-child td { border-bottom:none; }
+td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); white-space:nowrap; }
+.t-studies td { font-size:14.5px; line-height:1.5; }
+
+.steps { list-style:none; margin:26px 0 0; padding:0; display:grid; gap:1px;
+  background:var(--rule); border:1px solid var(--rule); border-radius:3px; overflow:hidden; }
+.steps li { background:var(--panel); padding:18px 22px; display:grid;
+  grid-template-columns:2.4rem 1fr; gap:4px 16px; }
+.steps b { font-family:var(--f-mono); font-size:12px; font-weight:600; color:var(--struct);
+  padding-top:3px; letter-spacing:.04em; }
+.steps h3 { grid-column:2; margin-bottom:4px; }
+.steps p { grid-column:2; margin:0; font-size:15.5px; color:var(--ink-2); line-height:1.55; }
+
+.models { margin:28px 0 0; display:grid; gap:1px; background:var(--rule);
+  border:1px solid var(--rule); border-radius:3px; overflow:hidden; }
+.model { background:var(--panel); padding:20px 22px; display:grid;
+  grid-template-columns:minmax(150px,190px) 1fr; gap:6px 26px; }
+.model .who { font-family:var(--f-mono); font-size:12px; color:var(--struct); font-weight:600; line-height:1.5; }
+.model .who em { display:block; font-style:normal; color:var(--ink-3); font-weight:400; font-size:11px; margin-top:3px; }
+.model p { margin:0; font-size:15.5px; color:var(--ink-2); line-height:1.55; }
+@media (max-width:640px) { .model { grid-template-columns:1fr; } }
+
+.finding { padding-top:38px; }
+.finding + .finding { border-top:1px solid var(--rule); margin-top:38px; }
+.finding h3 { font-size:1.2rem; margin-bottom:12px; max-width:32ch; }
+
+.tags { display:flex; flex-wrap:wrap; gap:7px; margin-top:22px; padding:0; list-style:none; }
+.tags li { font-family:var(--f-mono); font-size:11.5px; color:var(--ink-2);
+  border:1px solid var(--rule-strong); border-radius:2px; padding:4px 9px; background:var(--surface); }
+
+.scope { border-left:2px solid var(--struct); padding:2px 0 2px 22px; margin-top:28px; }
+.sign { margin-top:72px; padding-top:30px; border-top:1px solid var(--rule-strong);
+  display:flex; flex-wrap:wrap; justify-content:space-between; gap:18px 40px; align-items:flex-end; }
+.sign-name { font-family:var(--f-display); font-weight:700; font-size:1.5rem; letter-spacing:-.018em; }
+.sign-meta { font-family:var(--f-mono); font-size:12px; color:var(--ink-3); line-height:1.7; }
+.sign a { color:var(--struct); text-decoration:none; border-bottom:1px solid var(--rule-strong); }
+.sign a:hover { border-bottom-color:var(--struct); }
+
+#tip { position:fixed; z-index:50; pointer-events:none; opacity:0; transform:translate(-50%,-136%);
+  transition:opacity .1s ease; background:var(--tip-bg); color:var(--tip-ink);
+  font-family:var(--f-mono); font-size:11.5px; line-height:1.5; padding:7px 10px;
+  border-radius:3px; white-space:nowrap; box-shadow:0 4px 14px rgba(0,0,0,.18); }
+#tip.on { opacity:1; }
+
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { transition-duration:.01ms !important; } }
+@media (max-width:720px) { .page { padding:0 20px 72px; } body { font-size:16px; } }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="langbar">
+    <a href="../" hreflang="es" lang="es">Español</a>
+    <span aria-current="page">English</span>
+  </div>
+
+  <header class="masthead">
+    <div class="kicker">Day-ahead price · ES · DE · FR · NL</div>
+    <h1>Forecasting power prices 24 hours ahead</h1>
+    <p class="lede">
+      Own hourly day-ahead price models for four European power markets, built
+      end to end from data ingestion to validation, plus sixteen market studies
+      on the same platform. This page shows the results and the method; the code
+      and the trained models are not published.
+    </p>
+    <div class="byline">
+      <strong>Jorge Sánchez Cava</strong>
+      <span>Data analyst · Power markets</span>
+      <span>Personal project · 2026</span>
+    </div>
+    <nav class="toc" aria-label="Sections">
+      <ol>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#spain">The Spanish model</a></li>
+        <li><a href="#models">Model families</a></li>
+        <li><a href="#validation">Validation</a></li>
+        <li><a href="#error">Where the error lives</a></li>
+        <li><a href="#markets">The other three markets</a></li>
+        <li><a href="#studies">Sixteen studies</a></li>
+        <li><a href="#data">The data</a></li>
+      </ol>
+    </nav>
+  </header>
+
+  <!-- ================= RESULTS ================= -->
+  <section id="results">
+    <div class="col">
+      <p class="eyebrow">The result</p>
+      <h2>Between 34% and 49% less error than the industry reference</h2>
+      <p>
+        The metric is <strong>mean absolute error</strong> (MAE) in euros per
+        megawatt-hour, across every hour of roughly 18 months the model never saw
+        during training. Next to it, the reference any forecast in this market is
+        measured against: <strong>repeating yesterday's price for the same
+        hour</strong>, which is surprisingly hard to beat because power prices are
+        strongly seasonal.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Mean error by market</div>
+        <div class="panel-note">EUR/MWh · lower is better</div>
+      </div>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--data-1)"></i> Model</span>
+        <span><i class="sw" style="background:var(--ghost)"></i> Reference: yesterday's price (D-1)</span>
+      </div>
+      <div class="scroll">
+        <svg viewBox="0 0 720 312" role="img" aria-label="Mean absolute error by market against repeating the previous day's price. Spain 9.83 versus 17.95. Germany 14.22 versus 27.61. France 15.93 versus 24.05. Netherlands 16.36 versus 26.06 EUR per megawatt hour.">
+          <line class="grid-line" x1="120" y1="30" x2="120" y2="292"></line>
+          <line class="grid-line" x1="293.3" y1="30" x2="293.3" y2="292"></line>
+          <line class="grid-line" x1="466.7" y1="30" x2="466.7" y2="292"></line>
+          <line class="grid-line" x1="640" y1="30" x2="640" y2="292"></line>
+          <text x="120" y="20" font-size="10.5" text-anchor="middle">0</text>
+          <text x="293.3" y="20" font-size="10.5" text-anchor="middle">10</text>
+          <text x="466.7" y="20" font-size="10.5" text-anchor="middle">20</text>
+          <text x="640" y="20" font-size="10.5" text-anchor="middle">30</text>
+
+          <text class="cat" x="108" y="52" font-size="12.5" text-anchor="end">Spain</text>
+          <rect class="mark" x="120" y="42" width="170.4" height="17" rx="3" fill="var(--data-1)" data-tip="Spain · model · MAE 9.83 EUR/MWh"></rect>
+          <text class="val" x="298" y="55" font-size="12">9.83</text>
+          <rect class="mark" x="120" y="61" width="311.1" height="9" rx="3" fill="var(--ghost)" data-tip="Spain · yesterday's price · MAE 17.95 EUR/MWh"></rect>
+          <text x="439" y="69" font-size="10.5">17.95</text>
+
+          <text class="cat" x="108" y="112" font-size="12.5" text-anchor="end">Germany</text>
+          <rect class="mark" x="120" y="102" width="246.5" height="17" rx="3" fill="var(--data-1)" data-tip="Germany · model · MAE 14.22 EUR/MWh"></rect>
+          <text class="val" x="374" y="115" font-size="12">14.22</text>
+          <rect class="mark" x="120" y="121" width="478.6" height="9" rx="3" fill="var(--ghost)" data-tip="Germany · yesterday's price · MAE 27.61 EUR/MWh"></rect>
+          <text x="606" y="129" font-size="10.5">27.61</text>
+
+          <text class="cat" x="108" y="172" font-size="12.5" text-anchor="end">France</text>
+          <rect class="mark" x="120" y="162" width="276.1" height="17" rx="3" fill="var(--data-1)" data-tip="France · model · MAE 15.93 EUR/MWh"></rect>
+          <text class="val" x="404" y="175" font-size="12">15.93</text>
+          <rect class="mark" x="120" y="181" width="416.9" height="9" rx="3" fill="var(--ghost)" data-tip="France · yesterday's price · MAE 24.05 EUR/MWh"></rect>
+          <text x="545" y="189" font-size="10.5">24.05</text>
+
+          <text class="cat" x="108" y="232" font-size="12.5" text-anchor="end">Netherlands</text>
+          <rect class="mark" x="120" y="222" width="283.6" height="17" rx="3" fill="var(--data-1)" data-tip="Netherlands · model · MAE 16.36 EUR/MWh"></rect>
+          <text class="val" x="411" y="235" font-size="12">16.36</text>
+          <rect class="mark" x="120" y="241" width="451.7" height="9" rx="3" fill="var(--ghost)" data-tip="Netherlands · yesterday's price · MAE 26.06 EUR/MWh"></rect>
+          <text x="580" y="249" font-size="10.5">26.06</text>
+
+          <line class="axis-line" x1="120" y1="292" x2="680" y2="292"></line>
+          <text x="120" y="306" font-size="10.5">Mean absolute error (EUR/MWh)</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="panel">
+      <table>
+        <caption>Detail by market</caption>
+        <thead>
+          <tr>
+            <th scope="col">Market</th><th scope="col" class="num">Model MAE</th>
+            <th scope="col" class="num">D-1 MAE</th><th scope="col" class="num">Improvement</th>
+            <th scope="col" class="num">Correlation</th><th scope="col" class="num">Error / mean price</th>
+            <th scope="col" class="num">Hours evaluated</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="lead">Spain</td><td class="num">9.83</td><td class="num">17.95</td><td class="num">45.2%</td><td class="num">0.965</td><td class="num">15.0%</td><td class="num">36,142</td></tr>
+          <tr><td class="lead">Germany</td><td class="num">14.22</td><td class="num">27.61</td><td class="num">48.5%</td><td class="num">0.908</td><td class="num">14.4%</td><td class="num">36,993</td></tr>
+          <tr><td class="lead">France</td><td class="num">15.93</td><td class="num">24.05</td><td class="num">33.8%</td><td class="num">0.897</td><td class="num">23.6%</td><td class="num">36,570</td></tr>
+          <tr><td class="lead">Netherlands</td><td class="num">16.36</td><td class="num">26.06</td><td class="num">37.2%</td><td class="num">0.851</td><td class="num">17.0%</td><td class="num">36,478</td></tr>
+        </tbody>
+      </table>
+      <p class="panel-note" style="margin-top:16px">
+        Evaluation windows between February 2025 and September 2026, each market
+        with its own. Every figure comes from the validation described below,
+        never from the training set.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= SPAIN ================= -->
+  <section id="spain">
+    <div class="col">
+      <p class="eyebrow">The Spanish model · the main line</p>
+      <h2>Every component had to earn its place, and you can see what each one bought</h2>
+      <p>
+        Spain is the market with the most time invested and the best result:
+        <strong>9.83 EUR/MWh</strong> of mean error against a mean price of 65.61,
+        with a correlation of <strong>0.965</strong>. It is not one model but four
+        components stacked on top of each other, and each was adopted only after
+        measuring separately how much error it removed.
+      </p>
+      <p>
+        The chart below is measured over <strong>the same window of 36,142
+        hours</strong> in all five versions, which is the only way the differences
+        mean anything.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">What each component contributed · Spain</div>
+        <div class="panel-note">MAE in EUR/MWh · same window of 36,142 hours</div>
+      </div>
+      <div class="scroll">
+        <svg viewBox="0 0 720 258" role="img" aria-label="Contribution of each component to the Spanish model, over the same window. Ensemble of two tree models: 10.40. Adding the zero-price gate: 10.21. Adding the neural network as third member: 10.12. With the gate on the three-member ensemble: 9.90. With the upper-tail calibration: 9.83.">
+          <line class="grid-line" x1="250" y1="26" x2="250" y2="200"></line>
+          <line class="grid-line" x1="341.1" y1="26" x2="341.1" y2="200"></line>
+          <line class="grid-line" x1="432.2" y1="26" x2="432.2" y2="200"></line>
+          <line class="grid-line" x1="523.3" y1="26" x2="523.3" y2="200"></line>
+          <line class="grid-line" x1="614.4" y1="26" x2="614.4" y2="200"></line>
+          <text x="250" y="18" font-size="10.5" text-anchor="middle">9.6</text>
+          <text x="341.1" y="18" font-size="10.5" text-anchor="middle">9.8</text>
+          <text x="432.2" y="18" font-size="10.5" text-anchor="middle">10.0</text>
+          <text x="523.3" y="18" font-size="10.5" text-anchor="middle">10.2</text>
+          <text x="614.4" y="18" font-size="10.5" text-anchor="middle">10.4</text>
+
+          <text x="238" y="44" font-size="11" text-anchor="end">Two tree models</text>
+          <circle class="mark" cx="614.4" cy="40" r="5.5" fill="var(--data-1)" data-tip="Ensemble of two GBDTs (pooled + per hour) · MAE 10.40"></circle>
+          <text class="val" x="626" y="44" font-size="11.5">10.40</text>
+
+          <text x="238" y="80" font-size="11" text-anchor="end">+ zero-price gate</text>
+          <line x1="614.4" y1="76" x2="528.0" y2="76" stroke="var(--data-1)" stroke-width="3"></line>
+          <circle class="mark" cx="528.0" cy="76" r="5.5" fill="var(--data-1)" data-tip="With the zero-price classifier · MAE 10.21 · −0.19"></circle>
+          <text class="val" x="540" y="80" font-size="11.5">10.21</text>
+          <text x="622" y="80" font-size="10">−0.19</text>
+
+          <text x="238" y="116" font-size="11" text-anchor="end">+ neural net (3rd member)</text>
+          <line x1="528.0" y1="112" x2="486.9" y2="112" stroke="var(--data-1)" stroke-width="3"></line>
+          <circle class="mark" cx="486.9" cy="112" r="5.5" fill="var(--data-1)" data-tip="Three-member ensemble, no gate · MAE 10.12"></circle>
+          <text class="val" x="499" y="116" font-size="11.5">10.12</text>
+
+          <text x="238" y="152" font-size="11" text-anchor="end">Three members + gate</text>
+          <line x1="486.9" y1="148" x2="386.7" y2="148" stroke="var(--data-1)" stroke-width="3"></line>
+          <circle class="mark" cx="386.7" cy="148" r="5.5" fill="var(--data-1)" data-tip="Three-member ensemble with the zero-price gate · MAE 9.90 · −0.22"></circle>
+          <text class="val" x="399" y="152" font-size="11.5">9.90</text>
+          <text x="622" y="152" font-size="10">−0.22</text>
+
+          <text x="238" y="188" font-size="11" text-anchor="end">+ tail calibration</text>
+          <line x1="386.7" y1="184" x2="354.8" y2="184" stroke="var(--data-2)" stroke-width="3"></line>
+          <circle class="mark" cx="354.8" cy="184" r="6" fill="var(--data-2)" data-tip="Production: with upper-tail calibration · MAE 9.83 · −0.07"></circle>
+          <text class="val" x="368" y="188" font-size="11.5">9.83</text>
+          <text x="622" y="188" font-size="10">−0.07</text>
+
+          <line class="axis-line" x1="250" y1="200" x2="680" y2="200"></line>
+          <text x="250" y="216" font-size="10.5">Mean absolute error (EUR/MWh) — axis truncated so the differences are visible</text>
+          <text x="250" y="236" font-size="10.5" fill="var(--ink-3)">Each bar measures what the component removed, not a magnitude from zero.</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="col" style="margin-top:34px">
+      <p>
+        The component that contributes most is not the most sophisticated one. The
+        <strong>zero-price gate</strong> is a classifier that decides, before
+        predicting a number at all, whether an hour will settle at zero or below.
+        It exists because power prices are not a continuous variable: they have a
+        <strong>floor with concentrated mass</strong> — 6.3% of hours land exactly
+        there — and a regressor trained across the whole range spends its life
+        splitting the difference between two distinct regimes.
+      </p>
+      <p>
+        And where the stack really shows is in the expensive hours, which are the
+        ones that cost money:
+      </p>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b>14.03 → 10.87</b><span>MAE in the top 5% of hours by price (above 168 EUR/MWh), from the two-member ensemble to production</span></div>
+      <div class="stat"><b>−22.5%</b><span>error in that band, thanks to the third member and the calibration</span></div>
+      <div class="stat"><b>2.21</b><span>MAE in zero and negative price hours, where the gate does its work</span></div>
+      <div class="stat"><b>0.965</b><span>correlation with the actual price across the 36,142 hours evaluated</span></div>
+    </div>
+  </section>
+
+  <!-- ================= MODELS ================= -->
+  <section id="models">
+    <div class="col">
+      <p class="eyebrow">Model families</p>
+      <h2>Each part of the problem calls for a different tool</h2>
+      <p>
+        The day-ahead price is not one statistical problem: it is a zero-price
+        regime, a fairly smooth central body, and an upper tail with few examples
+        and a lot of money at stake. Using a single model for all three is what
+        caps most attempts. These are the families that ended up in production,
+        and why each one is where it is.
+      </p>
+    </div>
+
+    <div class="models">
+      <div class="model">
+        <div class="who">Gradient boosting<em>LightGBM · two members</em></div>
+        <p>
+          The body of the model. Two members from the same family but with a
+          different split of the data: one trained across all hours at once, the
+          other a separate model per hour of the day. The first exploits the full
+          history; the second captures that 3 a.m. and 8 p.m. are almost different
+          markets.
+        </p>
+      </div>
+      <div class="model">
+        <div class="who">Neural network<em>MLP 128×64 · averaged over seeds</em></div>
+        <p>
+          The third member, and it is there for a mechanical reason rather than
+          novelty: <strong>a tree model cannot extrapolate</strong>. It averages
+          leaves, so it never predicts above the maximum it saw in training —
+          exactly the failure mode in price spikes. A network can leave that range,
+          and it shows precisely there.
+        </p>
+      </div>
+      <div class="model">
+        <div class="who">Classifier<em>Zero-price gate</em></div>
+        <p>
+          Separates the regime before predicting a number. It treats the price
+          floor as what it is — a concentrated mass of probability, not the tail of
+          a continuous distribution — and lets the regressor handle only the
+          positive side.
+        </p>
+      </div>
+      <div class="model">
+        <div class="who">Quantile regression<em>Upper-tail calibration</em></div>
+        <p>
+          Corrects a bias that comes from the mismatch between training and
+          evaluation: the models minimise squared error, whose optimum is the mean,
+          but are scored on absolute error, whose optimum is the median. The result
+          is shrinkage towards the centre and under-prediction at the top. A line
+          to the median is fitted and applied <em>only</em> above a threshold.
+        </p>
+      </div>
+      <div class="model">
+        <div class="who">Target transformation<em>Log scale + Duan smearing</em></div>
+        <p>
+          The same problem solved from the other side, adopted in Germany and the
+          Netherlands: instead of correcting the output, change the scale on which
+          error is measured during training, so that a single 600 EUR/MWh hour does
+          not dominate the fit. It is the only change that improved the model's
+          ability to <strong>rank</strong> expensive hours against each other.
+        </p>
+      </div>
+      <div class="model">
+        <div class="who">Blending<em>Causal monthly weights</em></div>
+        <p>
+          Members are blended with weights chosen month by month over a grid
+          search, always using months already observed and never the period being
+          evaluated. A small detail that separates a real result from an inflated
+          one.
+        </p>
+      </div>
+      <div class="model">
+        <div class="who">Mechanistic simulator<em>Merit order · not in production</em></div>
+        <p>
+          Before all of the above, a model that is <em>not</em> statistical: it
+          stacks the marginal cost of each technology against demand to rebuild the
+          price from the actual economic mechanism. It reaches a correlation of
+          0.520 — not enough for production, but it is what taught which variables
+          matter and why.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= VALIDATION ================= -->
+  <section id="validation">
+    <div class="col">
+      <p class="eyebrow">Good practice</p>
+      <h2>The number is only worth something if the validation is honest</h2>
+      <p>
+        In time series it is very easy to produce an excellent and false figure:
+        all it takes is letting in, unintentionally, a piece of data that did not
+        yet exist at the moment of prediction. The whole design is built around
+        preventing that.
+      </p>
+    </div>
+
+    <ol class="steps">
+      <li>
+        <b>01</b>
+        <h3>Training uses only the past</h3>
+        <p>
+          Monthly <em class="term">walk-forward</em> validation: to predict a
+          month, the model is trained only on the preceding ones and retrained as
+          it advances. There is never a random split, which in a time series lets
+          the model see the future.
+        </p>
+      </li>
+      <li>
+        <b>02</b>
+        <h3>Only data available at D-1 gets in</h3>
+        <p>
+          Every variable passes a prior filter: was it published before gate
+          closure? Actual generation, imbalances and balancing prices are known
+          afterwards, so they serve as diagnostics and stay out of the model.
+        </p>
+      </li>
+      <li>
+        <b>03</b>
+        <h3>Everything estimated is estimated on the past</h3>
+        <p>
+          Not just the model: thresholds, calibrations and the weights that blend
+          the members too. Any constant tuned by looking at the test period
+          contaminates the result.
+        </p>
+      </li>
+      <li>
+        <b>04</b>
+        <h3>Comparison is against the stored previous version</h3>
+        <p>
+          Each improvement is measured against the production model's predictions
+          already written to disk, not against a stand-in retrained for the
+          occasion. That way the comparison isolates the change being tested.
+        </p>
+      </li>
+      <li>
+        <b>05</b>
+        <h3>Check whether the gain is real or just a good month</h3>
+        <p>
+          The aggregate comes with a <strong>confidence interval</strong> —
+          resampling whole months, because errors in consecutive hours are
+          correlated — and is recomputed after dropping the single best month. A
+          gain that collapses when one month is removed was not a gain.
+        </p>
+      </li>
+      <li>
+        <b>06</b>
+        <h3>Check that the gain comes from where it was supposed to</h3>
+        <p>
+          If a component exists to fix expensive hours, the gain has to concentrate
+          in months with expensive hours. When it does not, the change is still
+          adopted — error is the criterion — but it is written down that the
+          mechanism was something else, and that steers the next piece of work.
+        </p>
+      </li>
+    </ol>
+
+    <div class="col" style="margin-top:26px">
+      <p>
+        Everything tried is documented, whether it worked or not: the project holds
+        <strong>144 numbered technical findings</strong>, and a good share of them
+        are discarded experiments with the reason they were discarded. That is what
+        stops the same dead end being walked into again three weeks later.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= ERROR ================= -->
+  <section id="error">
+    <div class="col">
+      <p class="eyebrow">Diagnosis</p>
+      <h2>The error is not spread evenly: it lives in the extremes</h2>
+      <p>
+        An aggregate MAE hides where it comes from. Splitting hours by the price
+        they ended up settling at reveals the real shape of the problem — and shows
+        that each market fails somewhere different.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Mean error by price band</div>
+        <div class="panel-note">EUR/MWh · same scale across all four panels</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:26px 34px">
+
+        <figure style="margin:0">
+          <figcaption style="font-family:var(--f-mono);font-size:11.5px;color:var(--ink);font-weight:600;margin-bottom:6px">Spain</figcaption>
+          <svg viewBox="0 0 320 158" role="img" aria-label="Spain: 2.21 in hours priced at or below zero; 10.28 between 0 and 50; 11.55 between 50 and 100; 10.07 between 100 and 150; 11.01 above 150.">
+            <text x="58" y="19" font-size="9.5" text-anchor="end">≤ 0</text>
+            <rect class="mark" x="68" y="8" width="13.3" height="14" rx="3" fill="var(--data-1)" data-tip="Spain · ≤ 0 EUR/MWh · MAE 2.21"></rect>
+            <text class="val" x="87" y="19" font-size="10">2.21</text>
+            <text x="58" y="45" font-size="9.5" text-anchor="end">0 – 50</text>
+            <rect class="mark" x="68" y="34" width="61.7" height="14" rx="3" fill="var(--data-1)" data-tip="Spain · 0 to 50 EUR/MWh · MAE 10.28"></rect>
+            <text class="val" x="136" y="45" font-size="10">10.28</text>
+            <text x="58" y="71" font-size="9.5" text-anchor="end">50 – 100</text>
+            <rect class="mark" x="68" y="60" width="69.3" height="14" rx="3" fill="var(--data-1)" data-tip="Spain · 50 to 100 EUR/MWh · MAE 11.55"></rect>
+            <text class="val" x="144" y="71" font-size="10">11.55</text>
+            <text x="58" y="97" font-size="9.5" text-anchor="end">100 – 150</text>
+            <rect class="mark" x="68" y="86" width="60.4" height="14" rx="3" fill="var(--data-1)" data-tip="Spain · 100 to 150 EUR/MWh · MAE 10.07"></rect>
+            <text class="val" x="135" y="97" font-size="10">10.07</text>
+            <text x="58" y="123" font-size="9.5" text-anchor="end">&gt; 150</text>
+            <rect class="mark" x="68" y="112" width="66.1" height="14" rx="3" fill="var(--data-1)" data-tip="Spain · above 150 EUR/MWh · MAE 11.01"></rect>
+            <text class="val" x="141" y="123" font-size="10">11.01</text>
+            <line class="axis-line" x1="68" y1="134" x2="278" y2="134"></line>
+            <text x="68" y="150" font-size="9.5">0</text><text x="278" y="150" font-size="9.5" text-anchor="end">35</text>
+          </svg>
+        </figure>
+
+        <figure style="margin:0">
+          <figcaption style="font-family:var(--f-mono);font-size:11.5px;color:var(--ink);font-weight:600;margin-bottom:6px">Germany</figcaption>
+          <svg viewBox="0 0 320 158" role="img" aria-label="Germany: 18.39 in hours priced at or below zero; 14.28 between 0 and 50; 11.63 between 50 and 100; 11.10 between 100 and 150; 27.72 above 150.">
+            <text x="58" y="19" font-size="9.5" text-anchor="end">≤ 0</text>
+            <rect class="mark" x="68" y="8" width="110.3" height="14" rx="3" fill="var(--data-1)" data-tip="Germany · ≤ 0 EUR/MWh · MAE 18.39"></rect>
+            <text class="val" x="185" y="19" font-size="10">18.39</text>
+            <text x="58" y="45" font-size="9.5" text-anchor="end">0 – 50</text>
+            <rect class="mark" x="68" y="34" width="85.7" height="14" rx="3" fill="var(--data-1)" data-tip="Germany · 0 to 50 EUR/MWh · MAE 14.28"></rect>
+            <text class="val" x="160" y="45" font-size="10">14.28</text>
+            <text x="58" y="71" font-size="9.5" text-anchor="end">50 – 100</text>
+            <rect class="mark" x="68" y="60" width="69.8" height="14" rx="3" fill="var(--data-1)" data-tip="Germany · 50 to 100 EUR/MWh · MAE 11.63"></rect>
+            <text class="val" x="144" y="71" font-size="10">11.63</text>
+            <text x="58" y="97" font-size="9.5" text-anchor="end">100 – 150</text>
+            <rect class="mark" x="68" y="86" width="66.6" height="14" rx="3" fill="var(--data-1)" data-tip="Germany · 100 to 150 EUR/MWh · MAE 11.10"></rect>
+            <text class="val" x="141" y="97" font-size="10">11.10</text>
+            <text x="58" y="123" font-size="9.5" text-anchor="end">&gt; 150</text>
+            <rect class="mark" x="68" y="112" width="166.3" height="14" rx="3" fill="var(--data-1)" data-tip="Germany · above 150 EUR/MWh · MAE 27.72"></rect>
+            <text class="val" x="241" y="123" font-size="10">27.72</text>
+            <line class="axis-line" x1="68" y1="134" x2="278" y2="134"></line>
+            <text x="68" y="150" font-size="9.5">0</text><text x="278" y="150" font-size="9.5" text-anchor="end">35</text>
+          </svg>
+        </figure>
+
+        <figure style="margin:0">
+          <figcaption style="font-family:var(--f-mono);font-size:11.5px;color:var(--ink);font-weight:600;margin-bottom:6px">France</figcaption>
+          <svg viewBox="0 0 320 158" role="img" aria-label="France: 21.40 in hours priced at or below zero; 15.19 between 0 and 50; 12.89 between 50 and 100; 16.86 between 100 and 150; 22.48 above 150.">
+            <text x="58" y="19" font-size="9.5" text-anchor="end">≤ 0</text>
+            <rect class="mark" x="68" y="8" width="128.4" height="14" rx="3" fill="var(--data-1)" data-tip="France · ≤ 0 EUR/MWh · MAE 21.40"></rect>
+            <text class="val" x="203" y="19" font-size="10">21.40</text>
+            <text x="58" y="45" font-size="9.5" text-anchor="end">0 – 50</text>
+            <rect class="mark" x="68" y="34" width="91.1" height="14" rx="3" fill="var(--data-1)" data-tip="France · 0 to 50 EUR/MWh · MAE 15.19"></rect>
+            <text class="val" x="166" y="45" font-size="10">15.19</text>
+            <text x="58" y="71" font-size="9.5" text-anchor="end">50 – 100</text>
+            <rect class="mark" x="68" y="60" width="77.3" height="14" rx="3" fill="var(--data-1)" data-tip="France · 50 to 100 EUR/MWh · MAE 12.89"></rect>
+            <text class="val" x="152" y="71" font-size="10">12.89</text>
+            <text x="58" y="97" font-size="9.5" text-anchor="end">100 – 150</text>
+            <rect class="mark" x="68" y="86" width="101.2" height="14" rx="3" fill="var(--data-1)" data-tip="France · 100 to 150 EUR/MWh · MAE 16.86"></rect>
+            <text class="val" x="176" y="97" font-size="10">16.86</text>
+            <text x="58" y="123" font-size="9.5" text-anchor="end">&gt; 150</text>
+            <rect class="mark" x="68" y="112" width="134.9" height="14" rx="3" fill="var(--data-1)" data-tip="France · above 150 EUR/MWh · MAE 22.48"></rect>
+            <text class="val" x="210" y="123" font-size="10">22.48</text>
+            <line class="axis-line" x1="68" y1="134" x2="278" y2="134"></line>
+            <text x="68" y="150" font-size="9.5">0</text><text x="278" y="150" font-size="9.5" text-anchor="end">35</text>
+          </svg>
+        </figure>
+
+        <figure style="margin:0">
+          <figcaption style="font-family:var(--f-mono);font-size:11.5px;color:var(--ink);font-weight:600;margin-bottom:6px">Netherlands</figcaption>
+          <svg viewBox="0 0 320 158" role="img" aria-label="Netherlands: 24.85 in hours priced at or below zero; 21.99 between 0 and 50; 11.60 between 50 and 100; 12.75 between 100 and 150; 33.18 above 150.">
+            <text x="58" y="19" font-size="9.5" text-anchor="end">≤ 0</text>
+            <rect class="mark" x="68" y="8" width="149.1" height="14" rx="3" fill="var(--data-1)" data-tip="Netherlands · ≤ 0 EUR/MWh · MAE 24.85"></rect>
+            <text class="val" x="224" y="19" font-size="10">24.85</text>
+            <text x="58" y="45" font-size="9.5" text-anchor="end">0 – 50</text>
+            <rect class="mark" x="68" y="34" width="131.9" height="14" rx="3" fill="var(--data-1)" data-tip="Netherlands · 0 to 50 EUR/MWh · MAE 21.99"></rect>
+            <text class="val" x="206" y="45" font-size="10">21.99</text>
+            <text x="58" y="71" font-size="9.5" text-anchor="end">50 – 100</text>
+            <rect class="mark" x="68" y="60" width="69.6" height="14" rx="3" fill="var(--data-1)" data-tip="Netherlands · 50 to 100 EUR/MWh · MAE 11.60"></rect>
+            <text class="val" x="144" y="71" font-size="10">11.60</text>
+            <text x="58" y="97" font-size="9.5" text-anchor="end">100 – 150</text>
+            <rect class="mark" x="68" y="86" width="76.5" height="14" rx="3" fill="var(--data-1)" data-tip="Netherlands · 100 to 150 EUR/MWh · MAE 12.75"></rect>
+            <text class="val" x="151" y="97" font-size="10">12.75</text>
+            <text x="58" y="123" font-size="9.5" text-anchor="end">&gt; 150</text>
+            <rect class="mark" x="68" y="112" width="199.1" height="14" rx="3" fill="var(--data-1)" data-tip="Netherlands · above 150 EUR/MWh · MAE 33.18"></rect>
+            <text class="val" x="274" y="123" font-size="10">33.18</text>
+            <line class="axis-line" x1="68" y1="134" x2="278" y2="134"></line>
+            <text x="68" y="150" font-size="9.5">0</text><text x="278" y="150" font-size="9.5" text-anchor="end">35</text>
+          </svg>
+        </figure>
+
+      </div>
+      <p class="panel-note" style="margin-top:18px">
+        Spain is the flattest market: its worst band (11.55) barely exceeds its
+        best (10.07), and the zero-price regime is almost entirely solved (2.21).
+        The other three have their error concentrated in the extremes.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= OTHER MARKETS ================= -->
+  <section id="markets">
+    <div class="col">
+      <p class="eyebrow">The other three markets</p>
+      <h2>Each market is its own project, not the same model translated</h2>
+      <p>
+        What works in Spain is an idea to test in Germany, not a conclusion to
+        carry over. Degree days help in France and in none of the other three; the
+        tail calibration was adopted in Spain and France and dropped in Germany and
+        the Netherlands after being measured. The only improvement that has
+        travelled intact is the log scale on the training target.
+      </p>
+      <p>
+        The clearest example of why each market has to be studied separately is
+        German, and it is a subsidy rule.
+      </p>
+    </div>
+
+    <div class="finding">
+      <div class="col">
+        <h3>A clause in German renewables law draws the shape of negative prices</h3>
+        <p>
+          The German renewables act (<em class="term">EEG §51</em>) suspends an
+          installation's market premium when the price is negative for several
+          <strong>consecutive</strong> hours, and that threshold has been tightened
+          three times since 2023 — from six hours down to every quarter-hour. If
+          the rule is what drives behaviour, the price should not simply be
+          "negative": it should sink deeper the longer the run lasts, then recover
+          once installations have already lost the premium and no longer have a
+          reason to bid low.
+        </p>
+        <p>
+          That is exactly what shows up across 1,795 negative German hours. And the
+          trough is <strong>60% deeper</strong> since the February 2025 reform.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Mean price by position within the negative run</div>
+          <div class="panel-note">Germany · EUR/MWh</div>
+        </div>
+        <div class="legend">
+          <span><i class="sw" style="background:var(--data-1)"></i> Until 24 Feb 2025 · threshold of 3 to 6 hours</span>
+          <span><i class="sw" style="background:var(--data-2)"></i> From 25 Feb 2025 · every quarter-hour counts</span>
+        </div>
+        <div class="scroll">
+          <svg viewBox="0 0 720 300" role="img" aria-label="Mean price of negative German hours by position within the run. Until February 2025: minus 1.0 in the first hour, falling to minus 18.6 in the sixth and recovering to minus 11.7 in the eighth. From February 2025: minus 0.5 in the first, falling to minus 30.3 in the sixth and recovering to minus 14.1 in the eighth.">
+            <line class="grid-line" x1="60" y1="105.6" x2="560" y2="105.6"></line>
+            <line class="grid-line" x1="60" y1="171.3" x2="560" y2="171.3"></line>
+            <line class="grid-line" x1="60" y1="236.9" x2="560" y2="236.9"></line>
+            <line class="axis-line" x1="60" y1="40" x2="560" y2="40"></line>
+            <text x="52" y="44" font-size="10.5" text-anchor="end">0</text>
+            <text x="52" y="109.6" font-size="10.5" text-anchor="end">−10</text>
+            <text x="52" y="175.3" font-size="10.5" text-anchor="end">−20</text>
+            <text x="52" y="240.9" font-size="10.5" text-anchor="end">−30</text>
+
+            <polyline fill="none" stroke="var(--data-1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
+              points="60,46.6 131.4,68.9 202.9,103.7 274.3,147.0 345.7,158.8 417.1,162.1 488.6,138.4 560,116.8"></polyline>
+            <polyline fill="none" stroke="var(--data-2)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
+              points="60,43.3 131.4,70.2 202.9,117.4 274.3,182.4 345.7,225.1 417.1,238.9 488.6,193.6 560,132.5"></polyline>
+
+            <g fill="var(--data-1)">
+              <circle class="mark" cx="60" cy="46.6" r="4" data-tip="Until Feb 2025 · hour 1 · −1.0 EUR/MWh"></circle>
+              <circle class="mark" cx="131.4" cy="68.9" r="4" data-tip="Until Feb 2025 · hour 2 · −4.4"></circle>
+              <circle class="mark" cx="202.9" cy="103.7" r="4" data-tip="Until Feb 2025 · hour 3 · −9.7"></circle>
+              <circle class="mark" cx="274.3" cy="147.0" r="4" data-tip="Until Feb 2025 · hour 4 · −16.3"></circle>
+              <circle class="mark" cx="345.7" cy="158.8" r="4" data-tip="Until Feb 2025 · hour 5 · −18.1"></circle>
+              <circle class="mark" cx="417.1" cy="162.1" r="4.5" data-tip="Until Feb 2025 · hour 6 · −18.6 (trough)"></circle>
+              <circle class="mark" cx="488.6" cy="138.4" r="4" data-tip="Until Feb 2025 · hour 7 · −15.0"></circle>
+              <circle class="mark" cx="560" cy="116.8" r="4" data-tip="Until Feb 2025 · hour 8 · −11.7"></circle>
+            </g>
+            <g fill="var(--data-2)">
+              <circle class="mark" cx="60" cy="43.3" r="4" data-tip="From Feb 2025 · hour 1 · −0.5 EUR/MWh"></circle>
+              <circle class="mark" cx="131.4" cy="70.2" r="4" data-tip="From Feb 2025 · hour 2 · −4.6"></circle>
+              <circle class="mark" cx="202.9" cy="117.4" r="4" data-tip="From Feb 2025 · hour 3 · −11.8"></circle>
+              <circle class="mark" cx="274.3" cy="182.4" r="4" data-tip="From Feb 2025 · hour 4 · −21.7"></circle>
+              <circle class="mark" cx="345.7" cy="225.1" r="4" data-tip="From Feb 2025 · hour 5 · −28.2"></circle>
+              <circle class="mark" cx="417.1" cy="238.9" r="4.5" data-tip="From Feb 2025 · hour 6 · −30.3 (trough)"></circle>
+              <circle class="mark" cx="488.6" cy="193.6" r="4" data-tip="From Feb 2025 · hour 7 · −23.4"></circle>
+              <circle class="mark" cx="560" cy="132.5" r="4" data-tip="From Feb 2025 · hour 8 · −14.1"></circle>
+            </g>
+
+            <line x1="562" y1="116.8" x2="568" y2="112" stroke="var(--data-1)" stroke-width="1.5"></line>
+            <line x1="562" y1="132.5" x2="568" y2="136" stroke="var(--data-2)" stroke-width="1.5"></line>
+            <text x="570" y="112" font-size="10.5" class="val">until Feb 2025</text>
+            <text x="570" y="140" font-size="10.5" class="val">from Feb 2025</text>
+
+            <text x="60" y="266" font-size="10.5" text-anchor="middle">1</text>
+            <text x="131.4" y="266" font-size="10.5" text-anchor="middle">2</text>
+            <text x="202.9" y="266" font-size="10.5" text-anchor="middle">3</text>
+            <text x="274.3" y="266" font-size="10.5" text-anchor="middle">4</text>
+            <text x="345.7" y="266" font-size="10.5" text-anchor="middle">5</text>
+            <text x="417.1" y="266" font-size="10.5" text-anchor="middle">6</text>
+            <text x="488.6" y="266" font-size="10.5" text-anchor="middle">7</text>
+            <text x="560" y="266" font-size="10.5" text-anchor="middle">8</text>
+            <text x="60" y="288" font-size="10.5">Consecutive hour within the negative price run</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="col">
+        <h3>The German market has shifted underneath the model</h3>
+        <p>
+          A model trained on three years of history implicitly assumes the market of
+          three years ago resembles today's. In Germany that has stopped being
+          true, and it can be quantified.
+        </p>
+      </div>
+      <div class="panel">
+        <table>
+          <caption>Germany · structural drift</caption>
+          <thead><tr><th scope="col">Indicator</th><th scope="col" class="num">2023</th><th scope="col" class="num">2026</th></tr></thead>
+          <tbody>
+            <tr><td class="lead">Hours with low residual load (&lt; 5 GW)</td><td class="num">2.9%</td><td class="num">13.1%</td></tr>
+            <tr><td class="lead">Solar capture rate</td><td class="num">0.758</td><td class="num">0.515</td></tr>
+            <tr><td class="lead">Wind capture rate</td><td class="num">0.839</td><td class="num">0.908</td></tr>
+            <tr><td class="lead">Median hour of prices &gt; 200 EUR/MWh</td><td class="num">17:00</td><td class="num">20:00</td></tr>
+          </tbody>
+        </table>
+        <p class="panel-note" style="margin-top:16px">
+          The <em class="term">capture rate</em> is the average price a technology
+          earns divided by the market's average price. Solar has gone from earning
+          76% of the average price to 51%: it cannibalises itself by concentrating
+          all its output in the same hours. Wind, spread across the day, has
+          <em>improved</em>. And the price peak has moved three hours later into
+          the evening with 10 GW less residual load: today's expensive hours are
+          summer evenings that any rule based on demand level would classify as
+          comfortable.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STUDIES ================= -->
+  <section id="studies">
+    <div class="col">
+      <p class="eyebrow">Sixteen studies</p>
+      <h2>The same data platform, sixteen different questions</h2>
+      <p>
+        Before the price models came sixteen market studies on the same data
+        infrastructure. Each with its design written before looking at any results,
+        and its own record of what came out — including the hypotheses that were
+        not confirmed.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="scroll">
+        <table class="t-studies">
+          <caption>Study catalogue · headline finding of each</caption>
+          <thead><tr><th scope="col">Study</th><th scope="col">What came out</th></tr></thead>
+          <tbody>
+            <tr><td class="code">A1</td><td><strong>Renewable cannibalisation.</strong> Monthly panel by technology, 2023–2026. Six of the forty-four months of wind data had undetected API gaps: verified live, reloaded, and kept as a permanent fix to the data platform.</td></tr>
+            <tr><td class="code">A2</td><td><strong>Zero and negative price hours.</strong> They go from 0.79% of hours in 2023 to 16.50% in 2026 (partial), after first correcting the bias of counting 15-minute periods instead of hours.</td></tr>
+            <tr><td class="code">A3</td><td><strong>The Iberian exception.</strong> The mechanism ran until 31 January 2025, considerably longer than the original design assumed; the study was redesigned as a during-versus-after difference-in-differences.</td></tr>
+            <tr><td class="code">B1</td><td><strong>Forecast error as a signal.</strong> The gap between the D-1 forecast and reality, measured on the continuous intraday market, anticipates part of the subsequent price move.</td></tr>
+            <tr><td class="code">B2</td><td><strong>Imbalance forecasting.</strong> Imbalance prices reach −1,864 and +4,286 EUR/MWh: structural tails by regulatory design rather than loading errors, which forces the use of rank statistics.</td></tr>
+            <tr><td class="code">C1</td><td><strong>Battery arbitrage.</strong> Adding the continuous intraday market to day-ahead raises the capturable spread by <strong>+20.5%</strong> with no other change to the strategy.</td></tr>
+            <tr><td class="code">C2</td><td><strong>Spark spread as an option.</strong> A CCGT's average margin is <strong>−20.78 EUR/MWh</strong>, but its real value when it can choose when to run is <strong>+8.92</strong>. The textbook demonstration of why a plant is an option, not a contract.</td></tr>
+            <tr><td class="code">C3</td><td><strong>Water value.</strong> A clear signal in the expected direction, after resolving that reservoir levels publish on Sundays while the other series aggregate to Mondays.</td></tr>
+            <tr><td class="code">D1</td><td><strong>Spain–France basis.</strong> Only 33% of hours have the two markets coupled and 41.2% show strong decoupling: the interconnector is an active constraint most of the time, not an occasional exception.</td></tr>
+            <tr><td class="code">E1</td><td><strong>Tail risk.</strong> The hypothesis is only half confirmed, and the part that does not fit is explained by the sample period itself rather than by a flaw in the analysis.</td></tr>
+            <tr><td class="code">E2</td><td><strong>Fuel switching.</strong> There is cointegration between fuel prices, with the honest caveat that the clean spark spread comes out negative more often than expected.</td></tr>
+            <tr><td class="code">F1</td><td><strong>Frequency services in Australia.</strong> The South Australian market has a relative spread roughly <strong>13 times larger</strong> than Spain's.</td></tr>
+            <tr><td class="code">F2</td><td><strong>Australian duck curve.</strong> Confirms worse absolute cannibalisation than Spain, with a methodological surprise in how the value factor is measured.</td></tr>
+            <tr><td class="code">G1</td><td><strong>Speed of reaction to weather.</strong> The ladder of forecast revisions exists and has measurable magnitude; raw weather is a much weaker signal than forecast error.</td></tr>
+            <tr><td class="code">G2</td><td><strong>Forecast reliability.</strong> Large revisions are confirmed more often than they revert — and the market cannot tell which is which at the moment they happen.</td></tr>
+            <tr><td class="code">G3</td><td><strong>Generation response.</strong> A correction spotted before building the predictor left the central finding clearer, not weaker.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DATA ================= -->
+  <section id="data">
+    <div class="col">
+      <p class="eyebrow">The data</p>
+      <h2>Thirty-eight sources, ingested and audited one by one</h2>
+      <p>
+        There is no ready-made dataset behind this. Each source is pulled from its
+        official origin, checked against the documentation — time zones, units,
+        resolution changes, later revisions — and passes an audit before it enters
+        any model. History starts in 2023 and updates daily.
+      </p>
+    </div>
+    <ul class="tags">
+      <li>ENTSO-E Transparency</li><li>OMIE</li><li>e·sios (REE)</li><li>SMARD</li>
+      <li>MIBGAS</li><li>OMIP</li><li>Power futures</li><li>ICE endex</li>
+      <li>ERA5 reanalysis</li><li>ECMWF forecast</li><li>Plant outages</li>
+      <li>Cross-border flows</li><li>NTC capacity</li><li>Hydro reservoirs</li>
+      <li>Imbalance and balancing prices</li><li>OMIE supply curve</li>
+      <li>Holiday calendars</li><li>Degree days</li><li>FX rates</li>
+      <li>AEMO (Australian market)</li>
+    </ul>
+    <div class="stats">
+      <div class="stat"><b>38</b><span>data sources with their own ingestion</span></div>
+      <div class="stat"><b>33</b><span>automated data quality audits</span></div>
+      <div class="stat"><b>2023 →</b><span>full history, updated daily</span></div>
+      <div class="stat"><b>144</b><span>documented technical findings, discards included</span></div>
+    </div>
+  </section>
+
+  <!-- ================= SCOPE ================= -->
+  <section>
+    <div class="col">
+      <p class="eyebrow">Scope</p>
+      <h2>What this page shows and what it does not</h2>
+      <p>
+        This page shows <strong>results and method</strong>: what was measured, how
+        it was validated, and what was learned about the market along the way. The
+        figures are internally reproducible and come straight from the project's
+        validation artefacts.
+      </p>
+      <div class="scope">
+        <p>
+          The code, the engineered features and the trained models are not
+          published. I am glad to walk through them in detail in a conversation,
+          and can demonstrate the project running live.
+        </p>
+      </div>
+    </div>
+
+    <div class="sign">
+      <div>
+        <div class="sign-name">Jorge Sánchez Cava</div>
+        <div class="sign-meta" style="margin-top:6px">Data analyst · European power markets</div>
+      </div>
+      <div class="sign-meta">
+        <a href="mailto:jorge.s.cava@gmail.com">jorge.s.cava@gmail.com</a><br>
+        Personal project, developed in 2026<br>
+        Data current to September 2026
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div id="tip" aria-hidden="true"></div>
+
+<script>
+(function () {
+  var tip = document.getElementById('tip');
+  function show(el, x, y) {
+    tip.textContent = el.getAttribute('data-tip');
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+    tip.classList.add('on');
+  }
+  function hide() { tip.classList.remove('on'); }
+  document.querySelectorAll('[data-tip]').forEach(function (el) {
+    el.addEventListener('mousemove', function (e) { show(el, e.clientX, e.clientY); });
+    el.addEventListener('mouseleave', hide);
+  });
+  window.addEventListener('scroll', hide, { passive: true });
+})();
+</script>
+</body>
+</html>

@@ -14,6 +14,9 @@
 <meta property="og:title" content="Mercado Diario · Jorge Sánchez Cava">
 <meta property="og:description" content="Modelos propios de precio day-ahead para los mercados eléctricos de España, Alemania, Francia y Países Bajos, con dieciséis estudios de mercado sobre la misma base de datos. Resultados y método, por Jorge Sánchez Cava.">
 <meta name="twitter:card" content="summary">
+<link rel="alternate" hreflang="es" href="https://jorgescava-maker.github.io/mercado-diario/">
+<link rel="alternate" hreflang="en" href="https://jorgescava-maker.github.io/mercado-diario/en/">
+<link rel="alternate" hreflang="x-default" href="https://jorgescava-maker.github.io/mercado-diario/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b4a52'/%3E%3Cpath d='M7 23V15h4v8zm7 0V9h4v14zm7 0v-5h4v5z' fill='%2300879c'/%3E%3C/svg%3E">
 <style>
   html { color-scheme: light dark; }
@@ -67,7 +70,7 @@ body { background:var(--ground); color:var(--ink); font-family:var(--f-body);
 .page { max-width:var(--wide); margin:0 auto; padding:0 28px 96px; }
 .col { max-width:var(--measure); }
 
-.masthead { padding:72px 0 34px; border-bottom:1px solid var(--rule-strong); }
+.masthead { padding:34px 0 34px; border-bottom:1px solid var(--rule-strong); }
 .kicker { font-family:var(--f-mono); font-size:11px; font-weight:500; letter-spacing:.16em;
   text-transform:uppercase; color:var(--struct); display:flex; align-items:center; gap:10px; margin-bottom:26px; }
 .kicker::before { content:""; width:26px; height:2px; background:var(--struct); flex:none; }
@@ -77,6 +80,12 @@ h1 { font-family:var(--f-display); font-weight:700; font-size:clamp(2.4rem,5.8vw
 .byline { margin-top:32px; display:flex; flex-wrap:wrap; gap:10px 30px; align-items:baseline;
   font-family:var(--f-mono); font-size:12.5px; color:var(--ink-3); }
 .byline strong { font-weight:600; color:var(--ink); font-size:13.5px; }
+
+.langbar { display:flex; justify-content:flex-end; gap:14px; padding:18px 0 0;
+  font-family:var(--f-mono); font-size:11.5px; letter-spacing:.04em; }
+.langbar a { color:var(--struct); text-decoration:none; border-bottom:1px solid var(--rule-strong); padding-bottom:1px; }
+.langbar a:hover { border-bottom-color:var(--struct); }
+.langbar span[aria-current] { color:var(--ink-3); }
 
 nav.toc { padding:20px 0 0; }
 nav.toc ol { list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:6px 8px;
@@ -178,10 +187,15 @@ td.code { font-family:var(--f-mono); font-size:11.5px; color:var(--struct); whit
 #tip.on { opacity:1; }
 
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { transition-duration:.01ms !important; } }
-@media (max-width:720px) { .page { padding:0 20px 72px; } .masthead { padding-top:52px; } body { font-size:16px; } }
+@media (max-width:720px) { .page { padding:0 20px 72px; } body { font-size:16px; } }
 </style>
 
 <div class="page">
+
+  <div class="langbar">
+    <span aria-current="page">Español</span>
+    <a href="en/" hreflang="en" lang="en">English</a>
+  </div>
 
   <header class="masthead">
     <div class="kicker">Precio day-ahead · ES · DE · FR · NL</div>
